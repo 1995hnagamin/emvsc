@@ -24,6 +24,13 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
         yield u
         u = advance(u, c)
 
+def divergence_matrix(n, dx):
+    D = np.zeros((n, n))
+    for i in range(n):
+        D[i,i-1] = -1./(2*dx)
+        D[i, (i+1)%n] = 1./(2*dx)
+    return D
+
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     f = init
@@ -33,20 +40,14 @@ def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     advance = flux_limited_lax_wendroff(limiter.superbee)
     eps0 = 1.
 
-    A = np.zeros((ngridx, ngridx))
-    for i in range(ngridx):
-        A[i, i-1] = 1
-        A[i, i] = -2
-        A[i, (i+1)%ngridx] = 1
+    A = np.linalg.pinv(divergence_matrix(ngridx, dx))
 
     rho = np.empty(ngridx)
-    phi = np.empty(ngridx)
     E = np.empty(ngridx)
 
     while True:
         rho = q * (ion_density - f.sum(axis=0))
-        phi = np.linalg.solve(A, -rho/eps0)
-        E = -(np.roll(phi,-1) - np.roll(phi,1)) / (2*dx)
+        E = A.dot(rho/eps0)
         yield f
 
         fnew = np.zeros_like(f)
