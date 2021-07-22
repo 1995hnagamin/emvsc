@@ -6,15 +6,15 @@ description = """
 [[particle]]
 name = "species 1"
 angle_frequency = 0.707100 # Hz
-charge_to_mass_ratio = -1.
-parallel_velocity = 1.
-perpendicular_velocity = 0.
-drift_velocity = -3.
+charge_to_mass_ratio = -1.0
+parallel_velocity = 1.0
+perpendicular_velocity = 0.0
+drift_velocity = -3.0
 
 [[particle]]
 name = "species 2"
 angle_frequency = 0.707100 # Hz
-charge_to_mass_ratio = -1.
-parallel_velocity = 1.
-perpendicular_velocity = 0.
-drift_velocity = 3.
+charge_to_mass_ratio = -1.0
+parallel_velocity = 1.0
+perpendicular_velocity = 0.0
+drift_velocity = 3.0
