@@ -1,5 +1,5 @@
 import numpy as np
-import filter
+import limiter
 
 def lax_wendroff(f, courant):
     return f \
@@ -19,7 +19,7 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
     f = init.copy()
     dx = system_length / ngrid
     c = velocity * dt / dx
-    advance = flux_limited_lax_wendroff(filter.superbee)
+    advance = flux_limited_lax_wendroff(limiter.superbee)
     while True:
         yield f
         f = advance(f, c)
