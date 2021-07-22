@@ -36,8 +36,8 @@ class Plot(wx.Panel):
         sizer.Add(self.canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-        x = np.linspace(0, xmax, nx)
-        v = np.linspace(-vmax, vmax, nv)
+        x = np.linspace(0, xmax, nx, endpoint=False)
+        v = np.linspace(-vmax, vmax, nv, endpoint=False)
         xx, vv = np.meshgrid(x, v, sparse=True)
         gamma = ni / (2*np.sqrt(2*np.pi))
         f_init = gamma*np.exp(-(vv-v0)**2/(2*w**2))*(1+amp*np.cos(k*xx)) \
