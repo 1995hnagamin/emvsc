@@ -8,20 +8,21 @@ import matplotlib.animation as mplanim
 
 import vlasov
 
-ni = 1.
-q = 1.
-eps0 = 1.
-m = 1.
-xmax = 20.
-vmax = 10.
+ni = 1.0
+q = 1.0
+eps0 = 1.0
+m = 1.0
+xmax = 20.0
+vmax = 10.0
 nx = 100
 nv = 100
 dt = 0.001
 
 k = 2 * np.pi / xmax
 amp = 0.3
-w = 1.
-v0 = 3.
+w = 1.0
+v0 = 3.0
+
 
 class Plot(wx.Panel):
     def __init__(self, parent):
@@ -39,9 +40,12 @@ class Plot(wx.Panel):
         x = np.linspace(0, xmax, nx, endpoint=False)
         v = np.linspace(-vmax, vmax, nv, endpoint=False)
         xx, vv = np.meshgrid(x, v, sparse=True)
-        gamma = ni / (2*np.sqrt(2*np.pi)*w)
-        f_init = gamma*np.exp(-(vv-v0)**2/(2*w**2))*(1+amp*np.cos(k*xx)) \
-                +gamma*np.exp(-(vv+v0)**2/(2*w**2))*(1+amp*np.cos(k*xx))
+        gamma = ni / (2 * np.sqrt(2 * np.pi) * w)
+        f_init = gamma * np.exp(-((vv - v0) ** 2) / (2 * w ** 2)) * (
+            1 + amp * np.cos(k * xx)
+        ) + gamma * np.exp(-((vv + v0) ** 2) / (2 * w ** 2)) * (
+            1 + amp * np.cos(k * xx)
+        )
         self.x = x
         self.v = v
 
@@ -54,18 +58,20 @@ class Plot(wx.Panel):
             init=f_init,
             ngridx=nx,
             ngridv=nv,
-            dt=dt)
+            dt=dt,
+        )
         self.gen = itertools.islice(values, 0, None, 1)
 
     def plot(self, _):
         (f, _, _) = next(self.gen)
         self.ax.cla()
 
-        self.ax.imshow(f, cmap='plasma')
+        self.ax.imshow(f, cmap="plasma")
+
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = wx.Frame(None, -1, 'sin x')
+    frame = wx.Frame(None, -1, "sin x")
     plot = Plot(frame)
     frame.Show()
     app.MainLoop()
