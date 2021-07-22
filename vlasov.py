@@ -48,7 +48,7 @@ def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     while True:
         rho = q * (ion_density - f.sum(axis=0))
         E = A.dot(rho/eps0)
-        yield f
+        yield (f, rho, E)
 
         fnew = np.zeros_like(f)
         for ix in range(ngridx):

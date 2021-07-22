@@ -58,7 +58,7 @@ class Plot(wx.Panel):
         self.gen = itertools.islice(values, 0, None, 1)
 
     def plot(self, _):
-        f = next(self.gen)
+        (f, _, _) = next(self.gen)
         self.ax.cla()
 
         self.ax.imshow(f, cmap='plasma')
