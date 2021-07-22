@@ -33,7 +33,7 @@ def divergence_matrix(n, dx):
 
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
-    f = init
+    f = init.copy()
     dx = system_length / ngridx
     v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
     dv = 2 * vmax / ngridv
@@ -46,13 +46,13 @@ def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     E = np.empty(ngridx)
 
     while True:
-        rho = q * (ion_density - f.sum(axis=0))
+        rho = q * (ion_density*dx - f.sum(axis=0))*dv
         E = A.dot(rho/eps0)
         yield (f, rho, E)
 
         fnew = np.zeros_like(f)
         for ix in range(ngridx):
-            c = q * E[ix] / m * dt / dv
+            c = -q * E[ix] / m * dt / dv
             fnew[ix,:] = advance(f[ix,:], c)
         f = fnew
         for iv in range(ngridv):
