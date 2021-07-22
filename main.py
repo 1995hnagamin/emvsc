@@ -59,12 +59,9 @@ class Plot(wx.Panel):
 
     def plot(self, _):
         f = next(self.gen)
-        self.figure.clf()
         self.ax.cla()
 
-        im = self.ax.imshow(f, cmap='plasma')
-        self.figure.colorbar(im, cax=self.ax)
-        self.figure.show()
+        self.ax.imshow(f, cmap='plasma')
 
 if __name__ == "__main__":
     app = wx.App()
