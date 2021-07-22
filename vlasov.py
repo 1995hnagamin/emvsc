@@ -1,10 +1,10 @@
 import numpy as np
 import limiter
 
-def lax_wendroff(f, courant):
-    return f \
-        - courant/2 * (np.roll(f, -1) - np.roll(f, 1)) \
-        + courant**2/2 * (np.roll(f, -1) - 2*f + np.roll(f, 1))
+def lax_wendroff(u, courant):
+    return u \
+        - courant/2 * (np.roll(u, -1) - np.roll(u, 1)) \
+        + courant**2/2 * (np.roll(u, -1) - 2*u + np.roll(u, 1))
 
 def flux_limited_lax_wendroff(limiter):
     def lw(u, courant):
@@ -16,10 +16,10 @@ def flux_limited_lax_wendroff(limiter):
     return lw
 
 def adv1d(*, system_length, velocity, init, ngrid, dt):
-    f = init.copy()
+    u = init.copy()
     dx = system_length / ngrid
     c = velocity * dt / dx
     advance = flux_limited_lax_wendroff(limiter.superbee)
     while True:
-        yield f
-        f = advance(f, c)
+        yield u
+        u = advance(u, c)
