@@ -23,3 +23,38 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
     while True:
         yield u
         u = advance(u, c)
+
+# 2-dimensional Vlasov-Poisson equation
+def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
+    f = init
+    dx = system_length / ngridx
+    v = np.linspace(-vmax, vmax, ngridv)
+    dv = 2 * vmax / ngridv
+    advance = flux_limited_lax_wendroff(limiter.superbee)
+    eps0 = 1.
+
+    A = np.zeros((ngridx, ngridx))
+    for i in range(ngridx):
+        A[i, i-1] = 1
+        A[i, i] = -2
+        A[i, (i+1)%ngridx] = 1
+
+    rho = np.empty(ngridx)
+    phi = np.empty(ngridx)
+    E = np.empty(ngridx)
+
+    while True:
+        rho = q * (ion_density - f.sum(axis=0))
+        phi = np.linalg.solve(A, -rho/eps0)
+        E = -(np.roll(phi,-1) - np.roll(phi,1)) / (2*dx)
+        yield f
+
+        fnew = np.zeros_like(f)
+        for ix in range(ngridx):
+            c = q * E[ix] / m * dt / dv
+            fnew[ix,:] = advance(f[ix,:], c)
+        f = fnew
+        for iv in range(ngridv):
+            c = v[iv] * dt / dx
+            fnew[:,iv] = advance(f[:,iv], c)
+        f = fnew
