@@ -12,7 +12,7 @@ class Plot(wx.Panel):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
+        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=40)
         self.ax = self.figure.add_subplot(111)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -31,7 +31,7 @@ class Plot(wx.Panel):
             init=f_init,
             ngrid=resolution,
             dt=.1)
-        self.gen = itertools.islice(values, 0, None, 40)
+        self.gen = itertools.islice(values, 0, None, 20)
 
     def plot(self, _):
         f = next(self.gen)
