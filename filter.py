@@ -1,4 +1,4 @@
 import numpy as np
 
 def superbee(r):
-    return np.max([0, np.min([2*r, 1]), np.min(r, 2)])
+    return np.maximum(0, np.maximum(np.minimum(2*r, 1), np.minimum(r, 2)))
