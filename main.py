@@ -39,7 +39,7 @@ class Plot(wx.Panel):
         x = np.linspace(0, xmax, nx, endpoint=False)
         v = np.linspace(-vmax, vmax, nv, endpoint=False)
         xx, vv = np.meshgrid(x, v, sparse=True)
-        gamma = ni / (2*np.sqrt(2*np.pi))
+        gamma = ni / (2*np.sqrt(2*np.pi)*w)
         f_init = gamma*np.exp(-(vv-v0)**2/(2*w**2))*(1+amp*np.cos(k*xx)) \
                 +gamma*np.exp(-(vv+v0)**2/(2*w**2))*(1+amp*np.cos(k*xx))
         self.x = x
