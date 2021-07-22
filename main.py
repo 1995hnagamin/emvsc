@@ -28,7 +28,7 @@ class Plot(wx.Panel):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=1000)
+        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
         self.ax = self.figure.add_subplot(111)
         self.colorbar = None
 
