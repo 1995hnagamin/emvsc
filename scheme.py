@@ -1,7 +1,8 @@
 import numpy as np
 
 
-def lax_wendroff(u, courant):
+# Lax-Wendroff scheme, 1D periodic boundary condition
+def lax_wendroff_p(u, courant):
     return (
         u
         - courant / 2 * (np.roll(u, -1) - np.roll(u, 1))
@@ -9,7 +10,8 @@ def lax_wendroff(u, courant):
     )
 
 
-def flux_limited_lax_wendroff(limiter):
+# Lax-Wendroff scheme with flux limiter, 1D periodic boundary condition
+def flux_limited_lax_wendroff_p(limiter):
     eps = 1e-100  # avoid zero division
 
     def lw(u, courant):

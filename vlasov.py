@@ -7,7 +7,7 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
     u = init.copy()
     dx = system_length / ngrid
     c = velocity * dt / dx
-    advance = scheme.flux_limited_lax_wendroff(limiter.superbee)
+    advance = scheme.flux_limited_lax_wendroff_p(limiter.superbee)
     while True:
         yield u
         u = advance(u, c)
@@ -27,7 +27,7 @@ def vp2d(*, q, m, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     dx = system_length / ngridx
     v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
     dv = 2 * vmax / ngridv
-    advance = scheme.flux_limited_lax_wendroff(limiter.superbee)
+    advance = scheme.flux_limited_lax_wendroff_p(limiter.superbee)
     eps0 = 1.0
 
     A = np.linalg.pinv(divergence_matrix(ngridx, dx))
