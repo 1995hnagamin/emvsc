@@ -72,24 +72,30 @@ class Plot(wx.Panel):
 
         axF = self.figure.add_subplot(221)
         axF.set_title("distibution function")
-        im = axF.imshow(f, cmap="plasma")
+        im = axF.imshow(f, cmap="plasma", extent=[0, xmax, -vmax, vmax])
         self.figure.colorbar(im)
 
         axR = self.figure.add_subplot(222)
         axR.set_title("charge density")
         axR.set_xlabel("x")
         axR.plot(self.x, rho)
+        axR.set_xlim(0, xmax)
+        axR.grid(True)
 
         axE = self.figure.add_subplot(223)
         axE.set_title("electric field Ex")
         axE.set_xlabel("x")
         axE.plot(self.x, E)
+        axE.set_xlim(0, xmax)
+        axE.grid(True)
 
         axV = self.figure.add_subplot(224)
         axV.set_title("velocity distribution")
         axV.set_xlabel("v")
         g = f.sum(axis=1)
         axV.plot(self.v, g)
+        axV.set_xlim(-vmax, vmax)
+        axV.grid(True)
 
 
 if __name__ == "__main__":
