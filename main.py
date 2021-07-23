@@ -33,11 +33,11 @@ class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
-        self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
+        canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.canvas, 1, wx.EXPAND)
+        sizer.Add(canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
         x = np.linspace(0, xmax, nx, endpoint=False)
@@ -100,11 +100,36 @@ class Plot(wx.Panel):
         axV.set_ylim(0, 30)
         axV.grid(True)
 
+    def close_animation(self):
+        self.animation.event_source.stop()
+
+
+class PlotFrame(wx.Frame):
+    def __init__(self, parent=None):
+        super().__init__(None, title="plot", size=(900, 600))
+        self.panel = Plot(self)
+        self.Bind(wx.EVT_CLOSE, self.onQuit)
+
+    def onQuit(self, event):
+        self.panel.close_animation()
+        self.Destroy()
+
+
+class MainFrame(wx.Frame):
+    def __init__(self, parent=None):
+        super().__init__(None, title="EmVSC")
+        panel = wx.Panel(self)
+        runBtn = wx.Button(panel, label="Run")
+        self.Bind(wx.EVT_BUTTON, self.onRunBtn, runBtn)
+
+    def onRunBtn(self, _):
+        plotFrame = PlotFrame(self)
+        plotFrame.Centre()
+        plotFrame.Show()
+
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = wx.Frame(None, -1, "EmVSC", size=(900, 600))
-    frame.Centre()
-    plot = Plot(frame)
+    frame = MainFrame()
     frame.Show()
     app.MainLoop()
