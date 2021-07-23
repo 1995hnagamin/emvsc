@@ -51,7 +51,7 @@ class Plot(wx.Panel):
 
         values = vlasov.vp2d(
             q=q,
-            m=m,
+            qm=q / m,
             ion_density=ni,
             system_length=xmax,
             vmax=vmax,
