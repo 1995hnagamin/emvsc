@@ -38,13 +38,13 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
 
     rho = np.empty(ngridx)
     E = np.empty(ngridx)
+    fnew = np.zeros_like(f)
 
     while True:
         rho = q * (ion_density - trapezoidal_rule(f, dv))
         E = A.dot(rho / eps0)
         yield (f, rho, E)
 
-        fnew = np.zeros_like(f)
         for ix in range(ngridx):
             c = -qm * E[ix] * dt / dv
             fnew[:, ix] = advance(f[:, ix], c)
