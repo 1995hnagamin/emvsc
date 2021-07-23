@@ -33,11 +33,11 @@ class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
-        self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
+        canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.canvas, 1, wx.EXPAND)
+        sizer.Add(canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
         x = np.linspace(0, xmax, nx, endpoint=False)
