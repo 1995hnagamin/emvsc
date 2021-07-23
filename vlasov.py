@@ -21,6 +21,10 @@ def divergence_matrix(n, dx):
     return D
 
 
+def trapezoidal_rule(f, dx):
+    return dx * (f.sum(axis=0) - (f[0, :] + f[-1, :]) / 2)
+
+
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     f = init.copy()
@@ -36,7 +40,7 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     E = np.empty(ngridx)
 
     while True:
-        rho = q * (ion_density * dx - f.sum(axis=0)) * dv
+        rho = q * (ion_density - trapezoidal_rule(f, dv))
         E = A.dot(rho / eps0)
         yield (f, rho, E)
 
