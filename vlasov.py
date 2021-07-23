@@ -27,6 +27,7 @@ def trapezoidal_rule(f, dx):
 
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
+    nspecies = len(q)
     f = init.copy()
     dx = system_length / ngridx
     v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
@@ -38,18 +39,21 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
 
     rho = np.empty(ngridx)
     E = np.empty(ngridx)
-    fnew = np.zeros_like(f)
+    fnew = np.empty((ngridv, ngridx))
 
     while True:
-        rho = q * (ion_density - trapezoidal_rule(f, dv))
+        rho.fill(ion_density)
+        for s in range(nspecies):
+            rho += q[s] * trapezoidal_rule(f[s], dv)
         E = A.dot(rho / eps0)
         yield (f, rho, E)
 
-        for ix in range(ngridx):
-            c = -qm * E[ix] * dt / dv
-            fnew[:, ix] = advance(f[:, ix], c)
-        f = fnew
-        for iv in range(ngridv):
-            c = v[iv] * dt / dx
-            fnew[iv, :] = advance(f[iv, :], c)
-        f = fnew
+        for s in range(nspecies):
+            for iv in range(ngridv):
+                c = v[iv] * dt / dx
+                fnew[iv, :] = advance(f[s][iv, :], c)
+            f[s] = fnew
+            for ix in range(ngridx):
+                c = qm[s] * E[ix] * dt / dv
+                fnew[:, ix] = advance(f[s][:, ix], c)
+            f[s] = fnew
