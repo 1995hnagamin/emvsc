@@ -1,6 +1,10 @@
 import numpy as np
 
 
+def identity(_):
+    return 1
+
+
 def minmod(r):
     return np.clip(r, 0, 1)
 
