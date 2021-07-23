@@ -9,9 +9,10 @@ import matplotlib.animation as mplanim
 import vlasov
 
 ni = 1.0
-q = 1.0
+q = np.array([-1.0, -1.0])
 eps0 = 1.0
-m = 1.0
+q_ion = 1.0
+qm = np.array([-1.0, -1.0])
 xmax = 20.0
 vmax = 10.0
 nx = 100
@@ -45,14 +46,14 @@ class Plot(wx.Panel):
         xx, vv = np.meshgrid(x, v, sparse=True)
         f0a = ni * gaussian(vv, +v0, w) * (1 + amp * np.cos(k * xx))
         f0b = ni * gaussian(vv, -v0, w) * (1 + amp * np.cos(k * xx))
-        f_init = f0a + f0b
+        f_init = np.array([f0a, f0b])
         self.x = x
         self.v = v
 
         values = vlasov.vp2d(
             q=q,
-            qm=q / m,
-            ion_density=ni,
+            qm=qm,
+            ion_density=q_ion * ni,
             system_length=xmax,
             vmax=vmax,
             init=f_init,
@@ -72,7 +73,7 @@ class Plot(wx.Panel):
 
         axF = self.figure.add_subplot(221)
         axF.set_title("distibution function")
-        im = axF.imshow(f, cmap="plasma", extent=[0, xmax, -vmax, vmax])
+        im = axF.imshow(f.sum(axis=0), cmap="plasma", extent=[0, xmax, -vmax, vmax])
         self.figure.colorbar(im)
 
         axR = self.figure.add_subplot(222)
@@ -94,10 +95,12 @@ class Plot(wx.Panel):
         axV = self.figure.add_subplot(224)
         axV.set_title("velocity distribution")
         axV.set_xlabel("v")
-        g = f.sum(axis=1)
-        axV.plot(self.v, g)
+        for s in range(len(q)):
+            g = f[s].sum(axis=1)
+            axV.plot(self.v, g, label=f"species #{s}")
         axV.set_xlim(-vmax, vmax)
         axV.set_ylim(0, 30)
+        axV.legend()
         axV.grid(True)
 
     def close_animation(self):
