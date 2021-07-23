@@ -12,6 +12,7 @@ DATA_FILES = []
 OPTIONS = {}
 
 setup(
+    name="EmVSC",
     app=APP,
     data_files=DATA_FILES,
     options={"py2app": OPTIONS},
