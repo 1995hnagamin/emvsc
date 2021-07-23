@@ -62,12 +62,23 @@ class Plot(wx.Panel):
         )
         self.gen = itertools.islice(values, 0, None, 1)
 
-    def plot(self, _):
-        (f, _, _) = next(self.gen)
+        (f, rho, E) = next(self.gen)
         self.figure.clf()
-        ax = self.figure.add_subplot(111)
-        im = ax.imshow(f, cmap="plasma")
+        self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
+
+        axF = self.figure.add_subplot(221)
+        im = axF.imshow(f, cmap="plasma")
         self.figure.colorbar(im)
+
+        axR = self.figure.add_subplot(222)
+        axR.plot(self.x, rho)
+
+        axE = self.figure.add_subplot(223)
+        axE.plot(self.x, E)
+
+        axV = self.figure.add_subplot(224)
+        g = f.sum(axis=1)
+        axV.plot(self.v, g)
 
 
 if __name__ == "__main__":
