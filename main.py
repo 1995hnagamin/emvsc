@@ -60,23 +60,34 @@ class Plot(wx.Panel):
             ngridv=nv,
             dt=dt,
         )
-        self.gen = itertools.islice(values, 0, None, 1)
+        self.tick = 1
+        self.gen = itertools.islice(values, 0, None, self.tick)
 
+    def plot(self, i):
         (f, rho, E) = next(self.gen)
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
+        time = i * self.tick * dt
+        self.figure.suptitle(f"T = {time:.3g}")
 
         axF = self.figure.add_subplot(221)
+        axF.set_title("distibution function")
         im = axF.imshow(f, cmap="plasma")
         self.figure.colorbar(im)
 
         axR = self.figure.add_subplot(222)
+        axR.set_title("charge density")
+        axR.set_xlabel("x")
         axR.plot(self.x, rho)
 
         axE = self.figure.add_subplot(223)
+        axE.set_title("electric field Ex")
+        axE.set_xlabel("x")
         axE.plot(self.x, E)
 
         axV = self.figure.add_subplot(224)
+        axV.set_title("velocity distribution")
+        axV.set_xlabel("v")
         g = f.sum(axis=1)
         axV.plot(self.v, g)
 
