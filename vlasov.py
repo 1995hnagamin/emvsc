@@ -49,11 +49,11 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
         yield (f, rho, E)
 
         for s in range(nspecies):
-            for ix in range(ngridx):
-                c = qm[s] * E[ix] * dt / dv
-                fnew[:, ix] = advance(f[s][:, ix], c)
-            f[s] = fnew
             for iv in range(ngridv):
                 c = v[iv] * dt / dx
                 fnew[iv, :] = advance(f[s][iv, :], c)
+            f[s] = fnew
+            for ix in range(ngridx):
+                c = qm[s] * E[ix] * dt / dv
+                fnew[:, ix] = advance(f[s][:, ix], c)
             f[s] = fnew
