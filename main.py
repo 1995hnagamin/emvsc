@@ -35,8 +35,6 @@ class Plot(wx.Panel):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
-        self.ax = self.figure.add_subplot(111)
-        self.colorbar = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.canvas, 1, wx.EXPAND)
@@ -66,9 +64,10 @@ class Plot(wx.Panel):
 
     def plot(self, _):
         (f, _, _) = next(self.gen)
-        self.ax.cla()
-
-        self.ax.imshow(f, cmap="plasma")
+        self.figure.clf()
+        ax = self.figure.add_subplot(111)
+        im = ax.imshow(f, cmap="plasma")
+        self.figure.colorbar(im)
 
 
 if __name__ == "__main__":
