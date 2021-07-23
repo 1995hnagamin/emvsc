@@ -43,9 +43,9 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
         fnew = np.zeros_like(f)
         for ix in range(ngridx):
             c = -qm * E[ix] * dt / dv
-            fnew[ix, :] = advance(f[ix, :], c)
+            fnew[:, ix] = advance(f[:, ix], c)
         f = fnew
         for iv in range(ngridv):
             c = v[iv] * dt / dx
-            fnew[:, iv] = advance(f[:, iv], c)
+            fnew[iv, :] = advance(f[iv, :], c)
         f = fnew

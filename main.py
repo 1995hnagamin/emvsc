@@ -15,7 +15,7 @@ m = 1.0
 xmax = 20.0
 vmax = 10.0
 nx = 100
-nv = 100
+nv = 120
 dt = 0.001
 
 k = 2 * np.pi / xmax
