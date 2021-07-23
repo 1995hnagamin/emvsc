@@ -35,6 +35,8 @@ class Plot(wx.Panel):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
+        self.is_running = True
+        self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
@@ -102,6 +104,17 @@ class Plot(wx.Panel):
 
     def close_animation(self):
         self.animation.event_source.stop()
+
+    def onKeyDown(self, event):
+        keycode = event.GetKeyCode()
+        if keycode == wx.WXK_SPACE:
+            if self.is_running:
+                self.animation.event_source.stop()
+            else:
+                self.animation.event_source.start()
+            self.is_running = not self.is_running
+
+        event.Skip()
 
 
 class PlotFrame(wx.Frame):
