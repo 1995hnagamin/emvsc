@@ -15,8 +15,8 @@ m = 1.0
 xmax = 20.0
 vmax = 10.0
 nx = 100
-nv = 120
-dt = 0.001
+nv = 100
+dt = 0.01
 
 k = 2 * np.pi / xmax
 amp = 0.3
@@ -60,7 +60,7 @@ class Plot(wx.Panel):
             ngridv=nv,
             dt=dt,
         )
-        self.tick = 1
+        self.tick = 10
         self.gen = itertools.islice(values, 0, None, self.tick)
 
     def plot(self, i):
@@ -80,6 +80,7 @@ class Plot(wx.Panel):
         axR.set_xlabel("x")
         axR.plot(self.x, rho)
         axR.set_xlim(0, xmax)
+        axR.set_ylim(-0.5, 0.5)
         axR.grid(True)
 
         axE = self.figure.add_subplot(223)
@@ -87,6 +88,7 @@ class Plot(wx.Panel):
         axE.set_xlabel("x")
         axE.plot(self.x, E)
         axE.set_xlim(0, xmax)
+        axE.set_ylim(-1.2, 1.2)
         axE.grid(True)
 
         axV = self.figure.add_subplot(224)
@@ -95,6 +97,7 @@ class Plot(wx.Panel):
         g = f.sum(axis=1)
         axV.plot(self.v, g)
         axV.set_xlim(-vmax, vmax)
+        axV.set_ylim(0, 30)
         axV.grid(True)
 
 
