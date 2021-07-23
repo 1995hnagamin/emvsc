@@ -12,6 +12,7 @@ matplotlib = "^3.4.2"
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.0.16"
 black = "^21.7b0"
+py2app = "^0.24"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
