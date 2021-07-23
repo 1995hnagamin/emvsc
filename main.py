@@ -94,7 +94,8 @@ class Plot(wx.Panel):
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = wx.Frame(None, -1, "sin x")
+    frame = wx.Frame(None, -1, "sin x", size=(900, 600))
+    frame.Centre()
     plot = Plot(frame)
     frame.Show()
     app.MainLoop()
