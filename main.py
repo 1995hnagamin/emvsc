@@ -1,6 +1,8 @@
 import wx
 import numpy as np
 import itertools
+import os
+import toml
 
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -135,8 +137,33 @@ class MainFrame(wx.Frame):
     def __init__(self, parent=None):
         super().__init__(None, title="EmVSC")
         panel = wx.Panel(self)
+
+        loadBtn = wx.Button(panel, label="Load File")
+        self.Bind(wx.EVT_BUTTON, self.onLoadBtn, loadBtn)
+
         runBtn = wx.Button(panel, label="Run")
         self.Bind(wx.EVT_BUTTON, self.onRunBtn, runBtn)
+
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        panel.SetSizer(sizer)
+        sizer.Add(loadBtn)
+        sizer.Add(runBtn)
+
+    def onLoadBtn(self, event):
+        wildcard = "TOML files (*.toml)|*.toml"
+        dialog = wx.FileDialog(
+            self,
+            "Open configuration files",
+            wildcard=wildcard,
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        )
+        if dialog.ShowModal() == wx.ID_CANCEL:
+            dialog.Destroy()
+            return
+        path = dialog.GetPath()
+        if os.path.exists(path):
+            config = toml.load(path)
+        dialog.Destroy()
 
     def onRunBtn(self, _):
         plotFrame = PlotFrame(self)
