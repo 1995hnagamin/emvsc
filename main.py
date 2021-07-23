@@ -144,10 +144,16 @@ class MainFrame(wx.Frame):
         runBtn = wx.Button(panel, label="Run")
         self.Bind(wx.EVT_BUTTON, self.onRunBtn, runBtn)
 
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        panel.SetSizer(sizer)
-        sizer.Add(loadBtn)
-        sizer.Add(runBtn)
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        panel.SetSizer(mainSizer)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        mainSizer.Add(buttons)
+        buttons.Add(loadBtn)
+        buttons.Add(runBtn)
+
+        self.configText = wx.StaticText(panel, wx.ID_ANY)
+        mainSizer.Add(self.configText)
 
     def onLoadBtn(self, event):
         wildcard = "TOML files (*.toml)|*.toml"
@@ -163,6 +169,7 @@ class MainFrame(wx.Frame):
         path = dialog.GetPath()
         if os.path.exists(path):
             config = toml.load(path)
+            self.configText.SetLabel(toml.dumps(config))
         dialog.Destroy()
 
     def onRunBtn(self, _):
