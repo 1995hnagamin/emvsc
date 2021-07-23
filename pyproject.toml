@@ -8,6 +8,7 @@ authors = ["NAGAMINE Hideaki <1995.hnagamin@gmail.com>"]
 python = "^3.9"
 wxPython = "^4.1.1"
 matplotlib = "^3.4.2"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.0.16"
