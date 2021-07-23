@@ -24,6 +24,11 @@ w = 1.0
 v0 = 3.0
 
 
+def gaussian(x, x0, w):
+    A = 1 / (2 * np.sqrt(2 * np.pi) * w)
+    return A * np.exp(-((x - x0) ** 2) / (2 * w ** 2))
+
+
 class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -40,12 +45,9 @@ class Plot(wx.Panel):
         x = np.linspace(0, xmax, nx, endpoint=False)
         v = np.linspace(-vmax, vmax, nv, endpoint=False)
         xx, vv = np.meshgrid(x, v, sparse=True)
-        gamma = ni / (2 * np.sqrt(2 * np.pi) * w)
-        f_init = gamma * np.exp(-((vv - v0) ** 2) / (2 * w ** 2)) * (
-            1 + amp * np.cos(k * xx)
-        ) + gamma * np.exp(-((vv + v0) ** 2) / (2 * w ** 2)) * (
-            1 + amp * np.cos(k * xx)
-        )
+        f0a = ni * gaussian(vv, +v0, w) * (1 + amp * np.cos(k * xx))
+        f0b = ni * gaussian(vv, -v0, w) * (1 + amp * np.cos(k * xx))
+        f_init = f0a + f0b
         self.x = x
         self.v = v
 
