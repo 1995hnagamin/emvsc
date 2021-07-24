@@ -1,20 +1,37 @@
-[problem]
+[general]
 title = "Electron Two-stream Instability"
 description = """
 """
 
+background_charge_density = 1.0
+
+system_length = 20.0
+max_velocity = 10.0
+time_step = 0.01
+nx = 100
+nv = 100
+
 [[species]]
 name = "species 1"
-angle_frequency = 0.707100 # Hz
+charge = -1.0
 charge_to_mass_ratio = -1.0
-parallel_velocity = 1.0
-perpendicular_velocity = 0.0
 drift_velocity = -3.0
+number_density = 1.0
+
+am_wavenumber = 0.05
+am_amplitude = 0.3
+standard_derivation = 1.0
 
 [[species]]
 name = "species 2"
-angle_frequency = 0.707100 # Hz
+charge = -1.0
 charge_to_mass_ratio = -1.0
-parallel_velocity = 1.0
-perpendicular_velocity = 0.0
 drift_velocity = 3.0
+number_density = 1.0
+
+am_wavenumber = 0.05
+am_amplitude = 0.3
+standard_derivation = 1.0
+
+[view]
+tick = 10
