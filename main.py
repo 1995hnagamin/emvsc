@@ -75,7 +75,8 @@ class Plot(wx.Panel):
 
         axF = self.figure.add_subplot(221)
         axF.set_title("distibution function")
-        im = axF.imshow(f.sum(axis=0), cmap="plasma", extent=[0, xmax, -vmax, vmax])
+        extent = [0, xmax, -vmax, vmax]
+        im = axF.imshow(f.sum(axis=0), cmap="plasma", extent=extent, origin="lower")
         self.figure.colorbar(im)
 
         axR = self.figure.add_subplot(222)
