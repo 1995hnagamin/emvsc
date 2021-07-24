@@ -118,6 +118,7 @@ class Plot(wx.Panel):
         for s in range(len(q)):
             g = f[s].sum(axis=1)
             self.axV.plot(self.v, g, label=f"species #{s}")
+        self.axV.legend()
 
     def close_animation(self):
         self.animation.event_source.stop()
