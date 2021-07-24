@@ -3,10 +3,12 @@ import numpy as np
 
 # Lax-Wendroff scheme, 1D periodic boundary condition
 def lax_wendroff_p(u, courant):
+    p = np.empty(len(u) + 2)
+    p[1:-1] = u
+    p[0] = u[-1]
+    p[-1] = u[0]
     return (
-        u
-        - courant / 2 * (np.roll(u, -1) - np.roll(u, 1))
-        + courant ** 2 / 2 * (np.roll(u, -1) - 2 * u + np.roll(u, 1))
+        u - courant / 2 * (p[2:] - p[:-2]) + courant ** 2 / 2 * (p[2:] - 2 * u + p[:-2])
     )
 
 
