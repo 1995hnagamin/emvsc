@@ -99,7 +99,9 @@ class Plot(wx.Panel):
         time = i * self.tick * dt
         self.figure.suptitle(f"T = {time:.3g}")
 
-        self.im.set_data(f.sum(axis=0))
+        f_total = f.sum(axis=0)
+        self.im.set_data(f_total)
+        self.im.set_clim(vmin=np.min(f_total), vmax=np.max(f_total))
 
         for line in self.axR.get_lines():
             line.remove()
