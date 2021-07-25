@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit, prange
 import limiter
 import scheme
 
@@ -41,6 +42,18 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     E = np.empty(ngridx)
     fnew = np.empty((ngridv, ngridx))
 
+    @njit(parallel=True)
+    def update(fs, fnew, qm, advance):
+        for iv in prange(ngridv):
+            c = v[iv] * dt / dx
+            fnew[iv, :] = advance(fs[iv, :], c)
+        fs = fnew
+        for ix in prange(ngridx):
+            c = qm * E[ix] * dt / dv
+            fnew[:, ix] = advance(fs[:, ix], c)
+        fs = fnew
+        return fs
+
     while True:
         rho.fill(ion_density)
         for s in range(nspecies):
@@ -49,11 +62,4 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
         yield (f, rho, E)
 
         for s in range(nspecies):
-            for iv in range(ngridv):
-                c = v[iv] * dt / dx
-                fnew[iv, :] = advance(f[s][iv, :], c)
-            f[s] = fnew
-            for ix in range(ngridx):
-                c = qm[s] * E[ix] * dt / dv
-                fnew[:, ix] = advance(f[s][:, ix], c)
-            f[s] = fnew
+            f[s] = update(f[s], fnew, qm[s], advance)
