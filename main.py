@@ -35,7 +35,7 @@ class Plot(wx.Panel):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
+        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
         self.is_running = True
         self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
 
