@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit
 
 
 # Lax-Wendroff scheme, 1D periodic boundary condition
@@ -35,6 +36,7 @@ def flux_limited_lax_wendroff_p(limiter):
 
 
 # Lax-Wendroff scheme with superbee flux limiter, 1D periodic boundary condition
+@njit("f8[:](f8[:], f8)")
 def lax_wendroff_superbee_p(u, courant):
     eps = 1e-100  # avoid zero division
 
