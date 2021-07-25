@@ -26,6 +26,20 @@ def trapezoidal_rule(f, dx):
     return dx * (f.sum(axis=0) - (f[0, :] + f[-1, :]) / 2)
 
 
+@njit("f8[:,:](f8[:,:], f8[:,:], f8, f8, f8[:], f8[:])", parallel=True)
+def update(fs, fnew, dtdx, qmdtdv, v, E):
+    ngridv, ngridx = fs.shape
+    for iv in prange(ngridv):
+        c = v[iv] * dtdx
+        fnew[iv, :] = scheme.lax_wendroff_superbee_p(fs[iv, :], c)
+    fs = fnew
+    for ix in prange(ngridx):
+        c = E[ix] * qmdtdv
+        fnew[:, ix] = scheme.lax_wendroff_superbee_p(fs[:, ix], c)
+    fs = fnew
+    return fs
+
+
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     nspecies = len(q)
@@ -33,7 +47,6 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     dx = system_length / ngridx
     v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
     dv = 2 * vmax / ngridv
-    advance = scheme.lax_wendroff_superbee_p
     eps0 = 1.0
 
     A = np.linalg.pinv(divergence_matrix(ngridx, dx))
@@ -41,18 +54,6 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     rho = np.empty(ngridx)
     E = np.empty(ngridx)
     fnew = np.empty((ngridv, ngridx))
-
-    @njit(parallel=True)
-    def update(fs, fnew, qm, advance):
-        for iv in prange(ngridv):
-            c = v[iv] * dt / dx
-            fnew[iv, :] = advance(fs[iv, :], c)
-        fs = fnew
-        for ix in prange(ngridx):
-            c = qm * E[ix] * dt / dv
-            fnew[:, ix] = advance(fs[:, ix], c)
-        fs = fnew
-        return fs
 
     while True:
         rho.fill(ion_density)
@@ -62,4 +63,4 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
         yield (f, rho, E)
 
         for s in range(nspecies):
-            f[s] = update(f[s], fnew, qm[s], advance)
+            f[s] = update(f[s], fnew, dt / dx, qm[s] * dt / dv, v, E)
