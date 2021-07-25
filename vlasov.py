@@ -32,7 +32,7 @@ def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
     dx = system_length / ngridx
     v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
     dv = 2 * vmax / ngridv
-    advance = scheme.lax_wendroff_p
+    advance = scheme.flux_limited_lax_wendroff_p(limiter.superbee)
     eps0 = 1.0
 
     A = np.linalg.pinv(divergence_matrix(ngridx, dx))
