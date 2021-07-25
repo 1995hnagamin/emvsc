@@ -106,12 +106,15 @@ class Plot(wx.Panel):
 
         for line in self.axR.get_lines():
             line.remove()
+        self.axR.plot(self.x, rho, color="black")
 
         for line in self.axE.get_lines():
             line.remove()
+        self.axE.plot(self.x, E, color="black")
 
         for line in self.axV.get_lines():
             line.remove()
+        self.axV.set_prop_cycle(None)
         for s in range(len(q)):
             g = f[s].sum(axis=1)
             self.axV.plot(self.v, g, label=f"species #{s}")
