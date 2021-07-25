@@ -17,7 +17,7 @@ def flux_limited_lax_wendroff_p(limiter):
     eps = 1e-100  # avoid zero division
 
     def lw(u, courant):
-        v = np.empty(len(u) + 4, dtype=object)
+        v = np.empty(len(u) + 4)
         v[2:-2] = u
         v[:2] = u[-2:]
         v[-2:] = u[:2]
@@ -38,7 +38,7 @@ def flux_limited_lax_wendroff_p(limiter):
 def lax_wendroff_superbee_p(u, courant):
     eps = 1e-100  # avoid zero division
 
-    v = np.empty(len(u) + 4, dtype=object)
+    v = np.empty(len(u) + 4)
     v[2:-2] = u
     v[:2] = u[-2:]
     v[-2:] = u[:2]
