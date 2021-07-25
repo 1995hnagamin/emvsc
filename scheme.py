@@ -15,11 +15,18 @@ def flux_limited_lax_wendroff_p(limiter):
     eps = 1e-100  # avoid zero division
 
     def lw(u, courant):
-        diff = np.roll(u, -1) - u  # diff[i] = u[i+1] -u[i]
-        p = limiter(
-            np.divide(np.roll(diff, 1), diff + eps)
-        )  #  p[i] = (u[i]-u[i-1])/(u[i+1]-u[i])
-        F = u + p * (1 - courant) / 2 * diff
-        return u + courant * (np.roll(F, 1) - F)
+        v = np.empty(len(u) + 4, dtype=object)
+        v[2:-2] = u
+        v[:2] = u[-2:]
+        v[-2:] = u[:2]
+        diff = v[1:] - v[:-1]
+        if courant > 0:
+            p = limiter(np.divide(diff[:-2], diff[1:-1] + eps))
+            F = v[1:-2] + (1 - courant) / 2 * p * diff[1:-1]
+            return v[2:-2] + courant * (F[:-1] - F[1:])
+        else:
+            p = limiter(np.divide(diff[2:], diff[1:-1] + eps))
+            F = v[2:-1] - (1 + courant) / 2 * p * diff[1:-1]
+            return v[2:-2] - courant * (F[1:] - F[:-1])
 
     return lw
