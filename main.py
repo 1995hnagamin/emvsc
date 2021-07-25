@@ -37,9 +37,32 @@ class Plot(wx.Panel):
         super().__init__(parent)
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=20)
+        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
         self.is_running = True
         self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
+
+        self.figure.clf()
+        self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
+        self.axF = self.figure.add_subplot(221)
+        self.axF.set_title("distibution function")
+
+        self.axR = self.figure.add_subplot(222)
+        self.axR.set_title("charge density")
+        self.axR.set_xlabel("x")
+        self.axR.set_xlim(0, xmax)
+        self.axR.grid(True)
+
+        self.axE = self.figure.add_subplot(223)
+        self.axE.set_title("electric field Ex")
+        self.axE.set_xlabel("x")
+        self.axE.grid(True)
+        self.axE.set_xlim(0, xmax)
+
+        self.axV = self.figure.add_subplot(224)
+        self.axV.set_title("velocity distribution")
+        self.axV.set_xlabel("v")
+        self.axV.grid(True)
+        self.axV.set_xlim(-vmax, vmax)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
@@ -53,6 +76,11 @@ class Plot(wx.Panel):
         f_init = np.array([f0a, f0b])
         self.x = x
         self.v = v
+        extent = [0, xmax, -vmax, vmax]
+        self.im = self.axF.imshow(
+            f_init.sum(axis=0), cmap="plasma", extent=extent, origin="lower"
+        )
+        self.figure.colorbar(self.im, ax=[self.axF])
 
         values = vlasov.vp2d(
             q=q,
@@ -70,42 +98,28 @@ class Plot(wx.Panel):
 
     def plot(self, i):
         (f, rho, E) = next(self.gen)
-        self.figure.clf()
-        self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
         time = i * self.tick * dt
         self.figure.suptitle(f"T = {time:.3g}")
 
-        axF = self.figure.add_subplot(221)
-        axF.set_title("distibution function")
-        im = axF.imshow(f.sum(axis=0), cmap="plasma", extent=[0, xmax, -vmax, vmax])
-        self.figure.colorbar(im)
+        f_total = f.sum(axis=0)
+        self.im.set_data(f_total)
+        self.im.set_clim(vmin=np.min(f_total), vmax=np.max(f_total))
 
-        axR = self.figure.add_subplot(222)
-        axR.set_title("charge density")
-        axR.set_xlabel("x")
-        axR.plot(self.x, rho)
-        axR.set_xlim(0, xmax)
-        axR.set_ylim(-0.5, 0.5)
-        axR.grid(True)
+        for line in self.axR.get_lines():
+            line.remove()
+        self.axR.plot(self.x, rho, color="black")
 
-        axE = self.figure.add_subplot(223)
-        axE.set_title("electric field Ex")
-        axE.set_xlabel("x")
-        axE.plot(self.x, E)
-        axE.set_xlim(0, xmax)
-        axE.set_ylim(-1.2, 1.2)
-        axE.grid(True)
+        for line in self.axE.get_lines():
+            line.remove()
+        self.axE.plot(self.x, E, color="black")
 
-        axV = self.figure.add_subplot(224)
-        axV.set_title("velocity distribution")
-        axV.set_xlabel("v")
+        for line in self.axV.get_lines():
+            line.remove()
+        self.axV.set_prop_cycle(None)
         for s in range(len(q)):
             g = f[s].sum(axis=1)
-            axV.plot(self.v, g, label=f"species #{s}")
-        axV.set_xlim(-vmax, vmax)
-        axV.set_ylim(0, 30)
-        axV.legend()
-        axV.grid(True)
+            self.axV.plot(self.v, g, label=f"species #{s}")
+        self.axV.legend()
 
     def close_animation(self):
         self.animation.event_source.stop()

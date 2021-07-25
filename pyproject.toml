@@ -5,9 +5,10 @@ description = ""
 authors = ["NAGAMINE Hideaki <1995.hnagamin@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9, <3.10"
 wxPython = "^4.1.1"
 matplotlib = "^3.4.2"
+numba = "^0.53.1"
 toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
