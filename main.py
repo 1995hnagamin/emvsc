@@ -78,7 +78,7 @@ class Plot(wx.Panel):
         self.im = self.axF.imshow(
             f_init.sum(axis=0), cmap="plasma", extent=extent, origin="lower"
         )
-        # self.figure.colorbar(self.im)
+        self.figure.colorbar(self.im, ax=[self.axF])
 
         values = vlasov.vp2d(
             q=q,
