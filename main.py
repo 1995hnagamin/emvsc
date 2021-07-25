@@ -48,7 +48,6 @@ class Plot(wx.Panel):
         self.axR.set_title("charge density")
         self.axR.set_xlabel("x")
         self.axR.set_xlim(0, xmax)
-        self.axR.set_ylim(-0.5, 0.5)
         self.axR.grid(True)
 
         self.axE = self.figure.add_subplot(223)
@@ -56,14 +55,12 @@ class Plot(wx.Panel):
         self.axE.set_xlabel("x")
         self.axE.grid(True)
         self.axE.set_xlim(0, xmax)
-        self.axE.set_ylim(-1.2, 1.2)
 
         self.axV = self.figure.add_subplot(224)
         self.axV.set_title("velocity distribution")
         self.axV.set_xlabel("v")
         self.axV.grid(True)
         self.axV.set_xlim(-vmax, vmax)
-        self.axV.set_ylim(0, 30)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
