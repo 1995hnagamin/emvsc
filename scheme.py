@@ -46,10 +46,10 @@ def lax_wendroff_superbee_p(u, courant):
     if courant > 0:
         r = np.divide(diff[:-2], diff[1:-1] + eps)
         p = np.maximum(0, np.maximum(np.minimum(2 * r, 1), np.minimum(r, 2)))
-        F = v[1:-2] + (1 - courant) / 2 * p * diff[1:-1]
+        F = v[1:-2] + 0.5 * (1 - courant) * p * diff[1:-1]
         return v[2:-2] + courant * (F[:-1] - F[1:])
     else:
         r = np.divide(diff[2:], diff[1:-1] + eps)
         p = np.maximum(0, np.maximum(np.minimum(2 * r, 1), np.minimum(r, 2)))
-        F = v[2:-1] - (1 + courant) / 2 * p * diff[1:-1]
+        F = v[2:-1] - 0.5 * (1 + courant) * p * diff[1:-1]
         return v[2:-2] - courant * (F[1:] - F[:-1])
