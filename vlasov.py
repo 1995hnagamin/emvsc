@@ -29,6 +29,18 @@ class Species:
         self.n += 1
 
 
+@dataclass
+class Vp2dConfig:
+    species: Species
+    initial_distribution: np.ndarray
+    background_charge_density: float
+    system_length: float
+    ngridx: float
+    vmax: float
+    ngridv: float
+    dt: float
+
+
 def divergence_matrix(n, dx):
     D = np.zeros((n, n))
     for i in range(n):
