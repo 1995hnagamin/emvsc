@@ -32,6 +32,39 @@ def gaussian(x, x0, w):
     return A * np.exp(-((x - x0) ** 2) / (2 * w ** 2))
 
 
+def load_toml_file(toml):
+    general = toml["general"]
+    xmax = general["system_length"]
+    vmax = general["max_velocity"]
+    nx = general["nx"]
+    nv = general["nv"]
+    x = np.linspace(0, xmax, nx, endpoint=False)
+    v = np.linspace(-vmax, vmax, nv, endpoint=False)
+    xx, vv = np.meshgrid(x, v, sparse=True)
+    background_charge_density = general["background_charge_density"]
+    dt = general["time_step"]
+
+    species = vlasov.Species()
+    f_init = []
+    for s in toml["species"]:
+        name = s["name"]
+        q = s["charge"]
+        qm = s["charge_to_mass_ratio"]
+        species.append(name, q, qm)
+
+        ni = s["number_density"]
+        v0 = s["drift_velocity"]
+        amp = s["am_amplitude"]
+        k = s["am_wavenumber"]
+        w = s["standard_derivation"]
+        fs = ni * gaussian(vv, v0, w) * (1 + amp * np.cos(2 * np.pi * k * xx))
+        f_init.append(fs)
+
+    return vlasov.Vp2dConfig(
+        species, np.array(f_init), background_charge_density, xmax, nx, vmax, nv, dt
+    )
+
+
 class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
