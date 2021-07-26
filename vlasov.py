@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 import numpy as np
 from numba import njit, prange
 import limiter
@@ -12,6 +13,20 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
     while True:
         yield u
         u = advance(u, c)
+
+
+@dataclass
+class Species:
+    n: int = 0
+    name: list[str] = field(default_factory=list)
+    q: list[float] = field(default_factory=list)
+    qm: list[float] = field(default_factory=list)
+
+    def append(self, namei, qi, qmi):
+        self.name.append(namei)
+        self.q.append(qi)
+        self.qm.append(qmi)
+        self.n += 1
 
 
 def divergence_matrix(n, dx):
