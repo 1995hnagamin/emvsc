@@ -133,6 +133,9 @@ class Plot(wx.Panel):
 
         for line in self.axV.get_lines():
             line.remove()
+        self.axV.plot(
+            self.v, f_total.sum(axis=1), color="black", linewidth=0.3, label="total"
+        )
         self.axV.set_prop_cycle(None)
         for s in range(self.config.species.n):
             name = self.config.species.name[s]
