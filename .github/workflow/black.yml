@@ -1,7 +1,6 @@
 name: black
 
-on:
-  - push
+on: push
 
 jobs:
   build:
