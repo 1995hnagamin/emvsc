@@ -130,13 +130,11 @@ class Plot(wx.Panel):
 
         for line in self.axV.get_lines():
             line.remove()
-        self.axV.plot(
-            self.v, f_total.sum(axis=1), color="black", linewidth=0.3, label="total"
-        )
+        self.axV.plot(self.v, f_total.sum(axis=1), color="black", label="total")
         self.axV.set_prop_cycle(None)
         for s, species in enumerate(self.config.species):
             g = f[s].sum(axis=1)
-            self.axV.plot(self.v, g, label=species.name)
+            self.axV.plot(self.v, g, label=species.name, linewidth=0.3)
         self.axV.legend()
 
     def close_animation(self):
