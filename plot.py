@@ -30,3 +30,30 @@ class LinePlot:
         for line in self.axes.get_lines():
             line.remove()
         self.axes.plot(self.x, g, color="black")
+
+
+class VerocityDistPlot:
+    def __init__(self, axes, vvalue, species):
+        self.axes = axes
+        self.v = vvalue
+        self.species = species
+
+    def init_axes(self, f):
+        f_total = f.sum(axis=0)
+        self.axes.plot(self.v, f_total.sum(axis=1), color="black", label="total")
+        self.axes.set_prop_cycle(None)
+        for s, species in enumerate(self.species):
+            g = f[s].sum(axis=1)
+            self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
+        self.axes.legend()
+
+    def plot(self, f):
+        f_total = f.sum(axis=0)
+        for line in self.axes.get_lines():
+            line.remove()
+        self.axes.plot(self.v, f_total.sum(axis=1), color="black", label="total")
+        self.axes.set_prop_cycle(None)
+        for s, species in enumerate(self.species):
+            g = f[s].sum(axis=1)
+            self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
+        self.axes.legend()

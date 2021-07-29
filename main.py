@@ -64,6 +64,13 @@ def create_electric_field_plot(ax, x):
     return plot.LinePlot(ax, x)
 
 
+def create_velocity_distribution_plot(ax, v, species):
+    ax.set_title("velocity distribution")
+    ax.set_xlabel("v")
+    ax.grid(True)
+    return plot.VerocityDistPlot(ax, v, species)
+
+
 class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -75,7 +82,7 @@ class Plot(wx.Panel):
         self.plotF = None
         self.plotR = None
         self.plotE = None
-        self.axV = None
+        self.plotV = None
         self.x = None
         self.v = None
         self.im = None
@@ -112,11 +119,9 @@ class Plot(wx.Panel):
         axE.set_xlim(0, config.system_length)
         self.plotE = create_electric_field_plot(axE, self.x)
 
-        self.axV = self.figure.add_subplot(224)
-        self.axV.set_title("velocity distribution")
-        self.axV.set_xlabel("v")
-        self.axV.grid(True)
-        self.axV.set_xlim(-config.vmax, config.vmax)
+        axV = self.figure.add_subplot(224)
+        axV.set_xlim(-config.vmax, config.vmax)
+        self.plotV = create_velocity_distribution_plot(axV, self.v, config.species)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
@@ -134,14 +139,7 @@ class Plot(wx.Panel):
 
         self.plotE.plot(E)
 
-        for line in self.axV.get_lines():
-            line.remove()
-        self.axV.plot(self.v, f_total.sum(axis=1), color="black", label="total")
-        self.axV.set_prop_cycle(None)
-        for s, species in enumerate(self.config.species):
-            g = f[s].sum(axis=1)
-            self.axV.plot(self.v, g, label=species.name, linewidth=0.3)
-        self.axV.legend()
+        self.plotV.plot(f)
 
     def close_animation(self):
         self.animation.event_source.stop()
