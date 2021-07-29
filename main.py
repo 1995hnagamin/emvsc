@@ -8,6 +8,7 @@ import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import matplotlib.animation as mplanim
 
+import plot
 import vlasov
 
 
@@ -57,7 +58,7 @@ class Plot(wx.Panel):
 
         self.figure = None
         self.animation = None
-        self.axF = None
+        self.plotF = None
         self.axR = None
         self.axE = None
         self.axV = None
@@ -74,8 +75,8 @@ class Plot(wx.Panel):
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.axF = self.figure.add_subplot(221)
-        self.axF.set_title("distibution function")
+        axF = self.figure.add_subplot(221)
+        self.plotF = plot.DistFuncPlot(self.figure, axF)
 
         self.axR = self.figure.add_subplot(222)
         self.axR.set_title("charge density")
@@ -102,12 +103,9 @@ class Plot(wx.Panel):
         f_init = config.initial_distribution
         self.x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
         self.v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
-        extent = [0, config.system_length, -config.vmax, config.vmax]
-        self.im = self.axF.imshow(
-            f_init.sum(axis=0), cmap="plasma", extent=extent, origin="lower"
+        self.plotF.init_axes(
+            f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
         )
-        self.figure.colorbar(self.im, ax=[self.axF])
-
         values = vlasov.vp2d(config)
         tick = 10
         self.ndt = tick * config.dt
@@ -120,8 +118,7 @@ class Plot(wx.Panel):
         self.figure.suptitle(f"T = {time:.3g}")
 
         f_total = f.sum(axis=0)
-        self.im.set_data(f_total)
-        self.im.set_clim(vmin=np.min(f_total), vmax=np.max(f_total))
+        self.plotF.plot(f_total)
 
         for line in self.axR.get_lines():
             line.remove()
