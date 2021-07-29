@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 import numpy as np
 from numba import njit, prange
 import limiter
@@ -12,6 +13,24 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
     while True:
         yield u
         u = advance(u, c)
+
+
+@dataclass
+class Species:
+    name: str
+    q: float
+    qm: float
+
+@dataclass
+class Vp2dConfig:
+    species: list[Species]
+    initial_distribution: np.ndarray
+    background_charge_density: float
+    system_length: float
+    ngridx: float
+    vmax: float
+    ngridv: float
+    dt: float
 
 
 def divergence_matrix(n, dx):
@@ -41,22 +60,27 @@ def update(fs, fnew, dtdx, qmdtdv, v, E):
 
 
 # 2-dimensional Vlasov-Poisson equation
-def vp2d(*, q, qm, ion_density, system_length, vmax, init, ngridx, ngridv, dt):
-    nspecies = len(q)
-    f = init.copy()
-    dx = system_length / ngridx
-    v = np.linspace(-vmax, vmax, ngridv, endpoint=False)
-    dv = 2 * vmax / ngridv
+def vp2d(config: Vp2dConfig):
+    nspecies = len(config.species)
+    f = config.initial_distribution.copy()
+    dx = config.system_length / config.ngridx
+    v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
+    dv = 2 * config.vmax / config.ngridv
+    dt = config.dt
     eps0 = 1.0
 
-    A = np.linalg.pinv(divergence_matrix(ngridx, dx))
+    A = np.linalg.pinv(divergence_matrix(config.ngridx, dx))
 
-    rho = np.empty(ngridx)
-    E = np.empty(ngridx)
-    fnew = np.empty((ngridv, ngridx))
+    rho = np.empty(config.ngridx)
+    E = np.empty(config.ngridx)
+    fnew = np.empty((config.ngridv, config.ngridx))
+
+    q = [species.q for species in config.species]
+    qm = [species.qm for species in config.species]
+    background_charge_density = config.background_charge_density
 
     while True:
-        rho.fill(ion_density)
+        rho[:] = background_charge_density
         for s in range(nspecies):
             rho += q[s] * trapezoidal_rule(f[s], dv)
         E = A.dot(rho / eps0)
