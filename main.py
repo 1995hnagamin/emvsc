@@ -180,8 +180,9 @@ class MainFrame(wx.Frame):
         loadBtn = wx.Button(panel, label="Load File")
         self.Bind(wx.EVT_BUTTON, self.onLoadBtn, loadBtn)
 
-        runBtn = wx.Button(panel, label="Run")
-        self.Bind(wx.EVT_BUTTON, self.onRunBtn, runBtn)
+        self.runBtn = wx.Button(panel, label="Run")
+        self.runBtn.Disable()
+        self.Bind(wx.EVT_BUTTON, self.onRunBtn, self.runBtn)
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         panel.SetSizer(mainSizer)
@@ -189,7 +190,7 @@ class MainFrame(wx.Frame):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         mainSizer.Add(buttons)
         buttons.Add(loadBtn)
-        buttons.Add(runBtn)
+        buttons.Add(self.runBtn)
 
         self.configText = wx.StaticText(panel, wx.ID_ANY)
         mainSizer.Add(self.configText)
@@ -211,6 +212,7 @@ class MainFrame(wx.Frame):
             self.configText.SetLabel(toml.dumps(t))
             self.config = load_toml_file(t)
         dialog.Destroy()
+        self.runBtn.Enable()
 
     def onRunBtn(self, _):
         if self.config is None:
