@@ -12,7 +12,6 @@ numba = "^0.53.1"
 toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
-jupyterlab = "^3.0.16"
 black = "^21.7b0"
 
 [build-system]
