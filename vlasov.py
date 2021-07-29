@@ -17,21 +17,13 @@ def adv1d(*, system_length, velocity, init, ngrid, dt):
 
 @dataclass
 class Species:
-    n: int = 0
-    name: list[str] = field(default_factory=list)
-    q: list[float] = field(default_factory=list)
-    qm: list[float] = field(default_factory=list)
-
-    def append(self, namei, qi, qmi):
-        self.name.append(namei)
-        self.q.append(qi)
-        self.qm.append(qmi)
-        self.n += 1
-
+    name: str
+    q: float
+    qm: float
 
 @dataclass
 class Vp2dConfig:
-    species: Species
+    species: list[Species]
     initial_distribution: np.ndarray
     background_charge_density: float
     system_length: float
@@ -69,7 +61,7 @@ def update(fs, fnew, dtdx, qmdtdv, v, E):
 
 # 2-dimensional Vlasov-Poisson equation
 def vp2d(config: Vp2dConfig):
-    nspecies = config.species.n
+    nspecies = len(config.species)
     f = config.initial_distribution.copy()
     dx = config.system_length / config.ngridx
     v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
@@ -83,8 +75,8 @@ def vp2d(config: Vp2dConfig):
     E = np.empty(config.ngridx)
     fnew = np.empty((config.ngridv, config.ngridx))
 
-    q = config.species.q
-    qm = config.species.qm
+    q = [species.q for species in config.species]
+    qm = [species.qm for species in config.species]
     background_charge_density = config.background_charge_density
 
     while True:

@@ -28,13 +28,13 @@ def load_toml_file(toml):
     background_charge_density = general["background_charge_density"]
     dt = general["time_step"]
 
-    species = vlasov.Species()
+    species = []
     f_init = []
     for s in toml["species"]:
         name = s["name"]
         q = s["charge"]
         qm = s["charge_to_mass_ratio"]
-        species.append(name, q, qm)
+        species.append(vlasov.Species(name, q, qm))
 
         ni = s["number_density"]
         v0 = s["drift_velocity"]
@@ -137,10 +137,9 @@ class Plot(wx.Panel):
             self.v, f_total.sum(axis=1), color="black", linewidth=0.3, label="total"
         )
         self.axV.set_prop_cycle(None)
-        for s in range(self.config.species.n):
-            name = self.config.species.name[s]
+        for s, species in enumerate(self.config.species):
             g = f[s].sum(axis=1)
-            self.axV.plot(self.v, g, label=name)
+            self.axV.plot(self.v, g, label=species.name)
         self.axV.legend()
 
     def close_animation(self):
