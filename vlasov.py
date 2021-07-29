@@ -21,6 +21,7 @@ class Species:
     q: float
     qm: float
 
+
 @dataclass
 class Vp2dConfig:
     species: list[Species]
