@@ -57,6 +57,13 @@ def create_charge_density_plot(ax, x):
     return plot.LinePlot(ax, x)
 
 
+def create_electric_field_plot(ax, x):
+    ax.set_title("electric field Ex")
+    ax.set_xlabel("x")
+    ax.grid(True)
+    return plot.LinePlot(ax, x)
+
+
 class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -67,7 +74,7 @@ class Plot(wx.Panel):
         self.animation = None
         self.plotF = None
         self.plotR = None
-        self.axE = None
+        self.plotE = None
         self.axV = None
         self.x = None
         self.v = None
@@ -101,11 +108,9 @@ class Plot(wx.Panel):
         axR.set_xlim(0, config.system_length)
         self.plotR = create_charge_density_plot(axR, self.x)
 
-        self.axE = self.figure.add_subplot(223)
-        self.axE.set_title("electric field Ex")
-        self.axE.set_xlabel("x")
-        self.axE.grid(True)
-        self.axE.set_xlim(0, config.system_length)
+        axE = self.figure.add_subplot(223)
+        axE.set_xlim(0, config.system_length)
+        self.plotE = create_electric_field_plot(axE, self.x)
 
         self.axV = self.figure.add_subplot(224)
         self.axV.set_title("velocity distribution")
@@ -127,9 +132,7 @@ class Plot(wx.Panel):
 
         self.plotR.plot(rho)
 
-        for line in self.axE.get_lines():
-            line.remove()
-        self.axE.plot(self.x, E, color="black")
+        self.plotE.plot(E)
 
         for line in self.axV.get_lines():
             line.remove()
