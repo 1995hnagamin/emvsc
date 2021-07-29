@@ -50,6 +50,13 @@ def load_toml_file(toml):
     )
 
 
+def create_charge_density_plot(ax, x):
+    ax.set_title("charge density")
+    ax.set_xlabel("x")
+    ax.grid(True)
+    return plot.LinePlot(ax, x)
+
+
 class Plot(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -59,7 +66,7 @@ class Plot(wx.Panel):
         self.figure = None
         self.animation = None
         self.plotF = None
-        self.axR = None
+        self.plotR = None
         self.axE = None
         self.axV = None
         self.x = None
@@ -73,16 +80,26 @@ class Plot(wx.Panel):
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
 
+        self.x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
+        self.v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
+        f_init = config.initial_distribution
+        values = vlasov.vp2d(config)
+        tick = 10
+        self.ndt = tick * config.dt
+        self.gen = itertools.islice(values, 0, None, tick)
+        self.config = config
+
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
         axF = self.figure.add_subplot(221)
         self.plotF = plot.DistFuncPlot(self.figure, axF)
+        self.plotF.init_axes(
+            f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
+        )
 
-        self.axR = self.figure.add_subplot(222)
-        self.axR.set_title("charge density")
-        self.axR.set_xlabel("x")
-        self.axR.set_xlim(0, config.system_length)
-        self.axR.grid(True)
+        axR = self.figure.add_subplot(222)
+        axR.set_xlim(0, config.system_length)
+        self.plotR = create_charge_density_plot(axR, self.x)
 
         self.axE = self.figure.add_subplot(223)
         self.axE.set_title("electric field Ex")
@@ -100,18 +117,6 @@ class Plot(wx.Panel):
         sizer.Add(canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-        f_init = config.initial_distribution
-        self.x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
-        self.v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
-        self.plotF.init_axes(
-            f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
-        )
-        values = vlasov.vp2d(config)
-        tick = 10
-        self.ndt = tick * config.dt
-        self.gen = itertools.islice(values, 0, None, tick)
-        self.config = config
-
     def plot(self, i):
         (f, rho, E) = next(self.gen)
         time = i * self.ndt
@@ -120,9 +125,7 @@ class Plot(wx.Panel):
         f_total = f.sum(axis=0)
         self.plotF.plot(f_total)
 
-        for line in self.axR.get_lines():
-            line.remove()
-        self.axR.plot(self.x, rho, color="black")
+        self.plotR.plot(rho)
 
         for line in self.axE.get_lines():
             line.remove()

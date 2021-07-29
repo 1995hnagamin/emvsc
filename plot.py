@@ -16,3 +16,17 @@ class DistFuncPlot:
     def plot(self, fs):
         self.im.set_data(fs)
         self.im.set_clim(vmin=np.min(fs), vmax=np.max(fs))
+
+
+class LinePlot:
+    def __init__(self, axes, xvalue):
+        self.axes = axes
+        self.x = xvalue
+
+    def init_axes(self, g):
+        self.axes.plot(self.x, g, color="black")
+
+    def plot(self, g):
+        for line in self.axes.get_lines():
+            line.remove()
+        self.axes.plot(self.x, g, color="black")
