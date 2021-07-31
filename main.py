@@ -74,11 +74,10 @@ def create_velocity_distribution_plot(ax, v, species):
 class PlotPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.is_running = False
-        self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
 
         self.figure = None
         self.animation = None
+        self.is_running = False
         self.plotF = None
         self.plotR = None
         self.plotE = None
@@ -90,6 +89,7 @@ class PlotPanel(wx.Panel):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
+        self.is_running = True
 
         x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
         v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
@@ -141,16 +141,12 @@ class PlotPanel(wx.Panel):
     def close_animation(self):
         self.animation.event_source.stop()
 
-    def onKeyDown(self, event):
-        keycode = event.GetKeyCode()
-        if keycode == wx.WXK_SPACE:
-            if self.is_running:
-                self.animation.event_source.stop()
-            else:
-                self.animation.event_source.start()
-            self.is_running = not self.is_running
-
-        event.Skip()
+    def pause_resume(self):
+        if self.is_running:
+            self.animation.pause()
+        else:
+            self.animation.resume()
+        self.is_running = not self.is_running
 
 
 class PlotFrame(wx.Frame):
@@ -158,6 +154,7 @@ class PlotFrame(wx.Frame):
         super().__init__(None, title="plot", size=(900, 600))
         self.panel = PlotPanel(self)
         self.Bind(wx.EVT_CLOSE, self.onQuit)
+        self.Bind(wx.EVT_CHAR_HOOK, self.onCharHook)
 
     def init_figure(self, config):
         self.panel.init_figure(config)
@@ -165,6 +162,12 @@ class PlotFrame(wx.Frame):
     def onQuit(self, event):
         self.panel.close_animation()
         self.Destroy()
+
+    def onCharHook(self, event):
+        keycode = event.GetKeyCode()
+        if keycode == wx.WXK_SPACE:
+            self.panel.pause_resume()
+        event.Skip()
 
 
 class MainFrame(wx.Frame):
