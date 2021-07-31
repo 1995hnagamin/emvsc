@@ -32,3 +32,6 @@ number_density = 1.0
 am_wavenumber = 0.05
 am_amplitude = 0.3
 standard_derivation = 1.0
+
+[view]
+tick = 10
