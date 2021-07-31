@@ -71,7 +71,7 @@ def create_velocity_distribution_plot(ax, v, species):
     return plot.VerocityDistPlot(ax, v, species)
 
 
-class Plot(wx.Panel):
+class PlotPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
         self.is_running = False
@@ -156,7 +156,7 @@ class Plot(wx.Panel):
 class PlotFrame(wx.Frame):
     def __init__(self, parent=None):
         super().__init__(None, title="plot", size=(900, 600))
-        self.panel = Plot(self)
+        self.panel = PlotPanel(self)
         self.Bind(wx.EVT_CLOSE, self.onQuit)
 
     def init_figure(self, config):
