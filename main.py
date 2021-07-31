@@ -71,6 +71,23 @@ def create_velocity_distribution_plot(ax, v, species):
     return plot.VerocityDistPlot(ax, v, species)
 
 
+def plot_total_distribution_function(plot, f, rho, E):
+    f_total = f.sum(axis=0)
+    plot.plot(f_total)
+
+
+def plot_charge_density(plot, f, rho, E):
+    plot.plot(rho)
+
+
+def plot_electric_field(plot, f, rho, E):
+    plot.plot(E)
+
+
+def plot_velocity_distribution(plot, f, rho, E):
+    plot.plot(f)
+
+
 class PlotPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -106,19 +123,22 @@ class PlotPanel(wx.Panel):
         plotF.init_axes(
             f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
         )
-        self.subplots[0] = plotF
+        self.subplots[0] = (plotF, plot_total_distribution_function)
 
         axR = self.figure.add_subplot(222)
         axR.set_xlim(0, config.system_length)
-        self.subplots[1] = create_charge_density_plot(axR, x)
+        self.subplots[1] = (create_charge_density_plot(axR, x), plot_charge_density)
 
         axE = self.figure.add_subplot(223)
         axE.set_xlim(0, config.system_length)
-        self.subplots[2] = create_electric_field_plot(axE, x)
+        self.subplots[2] = (create_electric_field_plot(axE, x), plot_electric_field)
 
         axV = self.figure.add_subplot(224)
         axV.set_xlim(-config.vmax, config.vmax)
-        self.subplots[3] = create_velocity_distribution_plot(axV, v, config.species)
+        self.subplots[3] = (
+            create_velocity_distribution_plot(axV, v, config.species),
+            plot_velocity_distribution,
+        )
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
@@ -129,14 +149,8 @@ class PlotPanel(wx.Panel):
         time = i * self.ndt
         self.figure.suptitle(f"T = {time:.3g}")
 
-        f_total = f.sum(axis=0)
-        self.subplots[0].plot(f_total)
-
-        self.subplots[1].plot(rho)
-
-        self.subplots[2].plot(E)
-
-        self.subplots[3].plot(f)
+        for (plot, draw) in self.subplots:
+            draw(plot, f, rho, E)
 
     def close_animation(self):
         self.animation.event_source.stop()
