@@ -78,10 +78,7 @@ class PlotPanel(wx.Panel):
         self.figure = None
         self.animation = None
         self.is_running = False
-        self.plotF = None
-        self.plotR = None
-        self.plotE = None
-        self.plotV = None
+        self.subplots = None
         self.ndt = None
         self.config = None
 
@@ -102,23 +99,26 @@ class PlotPanel(wx.Panel):
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
+        self.subplots = [None] * 4
+
         axF = self.figure.add_subplot(221)
-        self.plotF = plot.DistFuncPlot(self.figure, axF)
-        self.plotF.init_axes(
+        plotF = plot.DistFuncPlot(self.figure, axF)
+        plotF.init_axes(
             f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
         )
+        self.subplots[0] = plotF
 
         axR = self.figure.add_subplot(222)
         axR.set_xlim(0, config.system_length)
-        self.plotR = create_charge_density_plot(axR, x)
+        self.subplots[1] = create_charge_density_plot(axR, x)
 
         axE = self.figure.add_subplot(223)
         axE.set_xlim(0, config.system_length)
-        self.plotE = create_electric_field_plot(axE, x)
+        self.subplots[2] = create_electric_field_plot(axE, x)
 
         axV = self.figure.add_subplot(224)
         axV.set_xlim(-config.vmax, config.vmax)
-        self.plotV = create_velocity_distribution_plot(axV, v, config.species)
+        self.subplots[3] = create_velocity_distribution_plot(axV, v, config.species)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
@@ -130,13 +130,13 @@ class PlotPanel(wx.Panel):
         self.figure.suptitle(f"T = {time:.3g}")
 
         f_total = f.sum(axis=0)
-        self.plotF.plot(f_total)
+        self.subplots[0].plot(f_total)
 
-        self.plotR.plot(rho)
+        self.subplots[1].plot(rho)
 
-        self.plotE.plot(E)
+        self.subplots[2].plot(E)
 
-        self.plotV.plot(f)
+        self.subplots[3].plot(f)
 
     def close_animation(self):
         self.animation.event_source.stop()
