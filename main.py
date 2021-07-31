@@ -83,8 +83,6 @@ class Plot(wx.Panel):
         self.plotR = None
         self.plotE = None
         self.plotV = None
-        self.x = None
-        self.v = None
         self.im = None
         self.ndt = None
         self.config = None
@@ -94,8 +92,8 @@ class Plot(wx.Panel):
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
 
-        self.x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
-        self.v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
+        x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
+        v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
         f_init = config.initial_distribution
         values = vlasov.vp2d(config)
         tick = 10
@@ -113,15 +111,15 @@ class Plot(wx.Panel):
 
         axR = self.figure.add_subplot(222)
         axR.set_xlim(0, config.system_length)
-        self.plotR = create_charge_density_plot(axR, self.x)
+        self.plotR = create_charge_density_plot(axR, x)
 
         axE = self.figure.add_subplot(223)
         axE.set_xlim(0, config.system_length)
-        self.plotE = create_electric_field_plot(axE, self.x)
+        self.plotE = create_electric_field_plot(axE, x)
 
         axV = self.figure.add_subplot(224)
         axV.set_xlim(-config.vmax, config.vmax)
-        self.plotV = create_velocity_distribution_plot(axV, self.v, config.species)
+        self.plotV = create_velocity_distribution_plot(axV, v, config.species)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
