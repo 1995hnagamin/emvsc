@@ -83,7 +83,6 @@ class Plot(wx.Panel):
         self.plotR = None
         self.plotE = None
         self.plotV = None
-        self.im = None
         self.ndt = None
         self.config = None
 
