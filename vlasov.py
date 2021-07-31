@@ -5,21 +5,12 @@ import limiter
 import scheme
 
 
-def adv1d(*, system_length, velocity, init, ngrid, dt):
-    u = init.copy()
-    dx = system_length / ngrid
-    c = velocity * dt / dx
-    advance = scheme.flux_limited_lax_wendroff_p(limiter.superbee)
-    while True:
-        yield u
-        u = advance(u, c)
-
-
 @dataclass
 class Species:
     name: str
     q: float
     qm: float
+
 
 @dataclass
 class Vp2dConfig:
