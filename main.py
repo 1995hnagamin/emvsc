@@ -109,7 +109,7 @@ class PlotPanel(wx.Panel):
         v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
         f_init = vp2d.initial_distribution
         values = vlasov.vp2d(vp2d)
-        tick = 10
+        tick = config["view"]["tick"]
         self.ndt = tick * vp2d.dt
         self.gen = itertools.islice(values, 0, None, tick)
 
