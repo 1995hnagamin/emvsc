@@ -35,3 +35,18 @@ standard_derivation = 1.0
 
 [view]
 tick = 10
+
+ncols = 2
+nrows = 2
+
+[[view.subplot]]
+type = "distribution function"
+
+[[view.subplot]]
+type = "velocity distribution"
+
+[[view.subplot]]
+type = "electric field"
+
+[[view.subplot]]
+type = "charge density"

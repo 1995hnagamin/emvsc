@@ -88,6 +88,41 @@ def plot_velocity_distribution(plot, f, rho, E):
     plot.plot(f)
 
 
+def load_subplot_config(figure, view, vp2d):
+    n = len(view["subplot"])
+    nrows = view["nrows"]
+    ncols = view["ncols"]
+    xmax = vp2d.system_length
+    vmax = vp2d.vmax
+    x = np.linspace(0, xmax, vp2d.ngridx, endpoint=False)
+    v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
+
+    plots = []
+    for i in range(n):
+        ax = figure.add_subplot(nrows, ncols, i + 1)
+        subplot = view["subplot"][i]
+        type = subplot["type"]
+        if type == "distribution function":
+            p = plot.DistFuncPlot(figure, ax)
+            f = vp2d.initial_distribution.sum(axis=0)
+            p.init_axes(f, 0, xmax, -vmax, vmax)
+            plots.append((p, plot_total_distribution_function))
+        elif type == "charge density":
+            ax.set_xlim(0, xmax)
+            p = create_charge_density_plot(ax, x)
+            plots.append((p, plot_charge_density))
+        elif type == "electric field":
+            ax.set_xlim(0, xmax)
+            p = create_electric_field_plot(ax, x)
+            plots.append((p, plot_electric_field))
+        elif type == "velocity distribution":
+            ax.set_xlim(-vmax, vmax)
+            p = create_velocity_distribution_plot(ax, v, vp2d.species)
+            plots.append((p, plot_velocity_distribution))
+
+    return plots
+
+
 class PlotPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -105,9 +140,6 @@ class PlotPanel(wx.Panel):
         self.is_running = True
 
         vp2d = load_vp2d_config(config)
-        x = np.linspace(0, vp2d.system_length, vp2d.ngridx, endpoint=False)
-        v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
-        f_init = vp2d.initial_distribution
         values = vlasov.vp2d(vp2d)
         tick = config["view"]["tick"]
         self.ndt = tick * vp2d.dt
@@ -115,29 +147,7 @@ class PlotPanel(wx.Panel):
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.subplots = [None] * 4
-
-        axF = self.figure.add_subplot(221)
-        plotF = plot.DistFuncPlot(self.figure, axF)
-        plotF.init_axes(
-            f_init.sum(axis=0), 0, vp2d.system_length, -vp2d.vmax, vp2d.vmax
-        )
-        self.subplots[0] = (plotF, plot_total_distribution_function)
-
-        axR = self.figure.add_subplot(222)
-        axR.set_xlim(0, vp2d.system_length)
-        self.subplots[1] = (create_charge_density_plot(axR, x), plot_charge_density)
-
-        axE = self.figure.add_subplot(223)
-        axE.set_xlim(0, vp2d.system_length)
-        self.subplots[2] = (create_electric_field_plot(axE, x), plot_electric_field)
-
-        axV = self.figure.add_subplot(224)
-        axV.set_xlim(-vp2d.vmax, vp2d.vmax)
-        self.subplots[3] = (
-            create_velocity_distribution_plot(axV, v, vp2d.species),
-            plot_velocity_distribution,
-        )
+        self.subplots = load_subplot_config(self.figure, config["view"], vp2d)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
