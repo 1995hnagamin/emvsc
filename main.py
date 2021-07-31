@@ -17,7 +17,7 @@ def gaussian(x, x0, w):
     return A * np.exp(-((x - x0) ** 2) / (2 * w ** 2))
 
 
-def load_toml_file(toml):
+def load_vp2d_config(toml):
     general = toml["general"]
     xmax = general["system_length"]
     vmax = general["max_velocity"]
@@ -97,22 +97,21 @@ class PlotPanel(wx.Panel):
         self.is_running = False
         self.subplots = None
         self.ndt = None
-        self.config = None
 
-    def init_figure(self, config: vlasov.Vp2dConfig):
+    def init_figure(self, config):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
         self.is_running = True
 
-        x = np.linspace(0, config.system_length, config.ngridx, endpoint=False)
-        v = np.linspace(-config.vmax, config.vmax, config.ngridv, endpoint=False)
-        f_init = config.initial_distribution
-        values = vlasov.vp2d(config)
+        vp2d = load_vp2d_config(config)
+        x = np.linspace(0, vp2d.system_length, vp2d.ngridx, endpoint=False)
+        v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
+        f_init = vp2d.initial_distribution
+        values = vlasov.vp2d(vp2d)
         tick = 10
-        self.ndt = tick * config.dt
+        self.ndt = tick * vp2d.dt
         self.gen = itertools.islice(values, 0, None, tick)
-        self.config = config
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
@@ -121,22 +120,22 @@ class PlotPanel(wx.Panel):
         axF = self.figure.add_subplot(221)
         plotF = plot.DistFuncPlot(self.figure, axF)
         plotF.init_axes(
-            f_init.sum(axis=0), 0, config.system_length, -config.vmax, config.vmax
+            f_init.sum(axis=0), 0, vp2d.system_length, -vp2d.vmax, vp2d.vmax
         )
         self.subplots[0] = (plotF, plot_total_distribution_function)
 
         axR = self.figure.add_subplot(222)
-        axR.set_xlim(0, config.system_length)
+        axR.set_xlim(0, vp2d.system_length)
         self.subplots[1] = (create_charge_density_plot(axR, x), plot_charge_density)
 
         axE = self.figure.add_subplot(223)
-        axE.set_xlim(0, config.system_length)
+        axE.set_xlim(0, vp2d.system_length)
         self.subplots[2] = (create_electric_field_plot(axE, x), plot_electric_field)
 
         axV = self.figure.add_subplot(224)
-        axV.set_xlim(-config.vmax, config.vmax)
+        axV.set_xlim(-vp2d.vmax, vp2d.vmax)
         self.subplots[3] = (
-            create_velocity_distribution_plot(axV, v, config.species),
+            create_velocity_distribution_plot(axV, v, vp2d.species),
             plot_velocity_distribution,
         )
 
@@ -223,7 +222,7 @@ class MainFrame(wx.Frame):
         if os.path.exists(path):
             t = toml.load(path)
             self.configText.SetLabel(toml.dumps(t))
-            self.config = load_toml_file(t)
+            self.config = t
         dialog.Destroy()
         self.runBtn.Enable()
 
