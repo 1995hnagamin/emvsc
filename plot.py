@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib.colors import LogNorm
 
 
 class DistFuncPlot:
@@ -57,3 +58,41 @@ class VerocityDistPlot:
             g = f[s].sum(axis=1)
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
         self.axes.legend()
+
+
+class DispersionRelationPlot:
+    def __init__(self, figure, axes, nx, nt):
+        self.figure = figure
+        self.axes = axes
+        self.values = np.zeros((nt, nx))
+        self.count = 0
+        self.limit = nt
+        self.extent = None
+
+    def push_back(self, g):
+        if self.count >= self.limit:
+            return
+        self.values[self.count, :] = g
+        self.count += 1
+
+    def init_axes(self, g, kmin, kmax, wmin, wmax):
+        self.extent = [kmin, kmax, wmin, wmax]
+        self.push_back(g)
+        self.im = self.axes.imshow(self.values, cmap="jet", origin="lower")
+
+    def plot(self, g):
+        if self.count >= self.limit:
+            return
+        self.push_back(g)
+        if self.count < self.limit:
+            self.im.set_data(self.values)
+        else:
+            spec = np.fft.fftshift(np.fft.fft2(self.values))
+            im = self.axes.imshow(
+                np.absolute(spec),
+                cmap="jet",
+                extent=self.extent,
+                origin="lower",
+                norm=LogNorm(),
+            )
+            self.figure.colorbar(im, ax=self.axes)
