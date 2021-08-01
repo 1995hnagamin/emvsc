@@ -46,7 +46,7 @@ type = "distribution function"
 type = "velocity distribution"
 
 [[view.subplot]]
-type = "electric field"
+type = "Ex dispersion relation"
 
 [[view.subplot]]
 type = "charge density"

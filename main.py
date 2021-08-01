@@ -123,6 +123,12 @@ def load_subplot_config(figure, view, vp2d, init):
             p = create_velocity_distribution_plot(ax, v, vp2d.species)
             p.init_axes(f_init)
             plots.append((p, plot_velocity_distribution))
+        elif type == "Ex dispersion relation":
+            kmax = 10
+            wmax = 10
+            p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, 100)
+            p.init_axes(E, -kmax, kmax, -wmax, wmax)
+            plots.append((p, plot_electric_field))
 
     return plots
 
