@@ -78,7 +78,7 @@ class DispersionRelationPlot:
     def init_axes(self, g, kmin, kmax, wmin, wmax):
         self.extent = [kmin, kmax, wmin, wmax]
         self.push_back(g)
-        self.im = self.axes.imshow(self.values, cmap="jet", origin="lower")
+        self.im = self.axes.imshow(self.values, cmap="rainbow", origin="lower")
 
     def plot(self, g):
         if self.count >= self.limit:
@@ -87,10 +87,7 @@ class DispersionRelationPlot:
         if self.count < self.limit:
             self.im.set_data(self.values)
         else:
-            spec = np.fft.fftshift(np.fft.fft2(self.values))
-            im = self.axes.imshow(
-                np.absolute(spec),
-                cmap="jet",
+                cmap="rainbow",
                 extent=self.extent,
                 origin="lower",
                 norm=LogNorm(),
