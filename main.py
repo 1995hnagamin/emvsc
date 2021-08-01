@@ -88,7 +88,7 @@ def plot_velocity_distribution(plot, f, rho, E):
     plot.plot(f)
 
 
-def load_subplot_config(figure, view, vp2d):
+def load_subplot_config(figure, view, vp2d, init):
     n = len(view["subplot"])
     nrows = view["nrows"]
     ncols = view["ncols"]
@@ -96,6 +96,7 @@ def load_subplot_config(figure, view, vp2d):
     vmax = vp2d.vmax
     x = np.linspace(0, xmax, vp2d.ngridx, endpoint=False)
     v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
+    (f_init, rho, E) = init
 
     plots = []
     for i in range(n):
@@ -104,20 +105,23 @@ def load_subplot_config(figure, view, vp2d):
         type = subplot["type"]
         if type == "distribution function":
             p = plot.DistFuncPlot(figure, ax)
-            f = vp2d.initial_distribution.sum(axis=0)
+            f = f_init.sum(axis=0)
             p.init_axes(f, 0, xmax, -vmax, vmax)
             plots.append((p, plot_total_distribution_function))
         elif type == "charge density":
             ax.set_xlim(0, xmax)
             p = create_charge_density_plot(ax, x)
+            p.init_axes(rho)
             plots.append((p, plot_charge_density))
         elif type == "electric field":
             ax.set_xlim(0, xmax)
             p = create_electric_field_plot(ax, x)
+            p.init_axes(E)
             plots.append((p, plot_electric_field))
         elif type == "velocity distribution":
             ax.set_xlim(-vmax, vmax)
             p = create_velocity_distribution_plot(ax, v, vp2d.species)
+            p.init_axes(f_init)
             plots.append((p, plot_velocity_distribution))
 
     return plots
@@ -144,10 +148,11 @@ class PlotPanel(wx.Panel):
         tick = config["view"]["tick"]
         self.ndt = tick * vp2d.dt
         self.gen = itertools.islice(values, 0, None, tick)
+        init = next(self.gen)
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.subplots = load_subplot_config(self.figure, config["view"], vp2d)
+        self.subplots = load_subplot_config(self.figure, config["view"], vp2d, init)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
