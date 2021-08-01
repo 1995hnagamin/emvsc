@@ -87,9 +87,12 @@ class DispersionRelationPlot:
         if self.count < self.limit:
             self.im.set_data(self.values)
         else:
+            spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))
+            self.im = self.axes.imshow(
+                spec,
                 cmap="rainbow",
                 extent=self.extent,
                 origin="lower",
-                norm=LogNorm(),
+                norm=LogNorm(vmin=np.min(spec), vmax=np.max(spec)),
             )
-            self.figure.colorbar(im, ax=self.axes)
+            self.figure.colorbar(self.im, ax=self.axes)
