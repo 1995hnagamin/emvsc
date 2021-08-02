@@ -115,4 +115,6 @@ class DispersionRelationPlot:
                 aspect=(kmax - kmin) / (wmax - wmin),
                 norm=LogNorm(vmin=lwb, vmax=upb),
             )
+            self.axes.set_xlabel("k")
+            self.axes.set_ylabel("ω")
             self.figure.colorbar(self.im, ax=self.axes)
