@@ -88,13 +88,12 @@ class DispersionRelationPlot:
         self.push_back(g)
         self.im = self.axes.imshow(self.values, cmap="rainbow", origin="lower")
 
-    def plot(self, g):
-        if self.count >= self.limit:
+    def plot(self, g, *, show=True):
+        if not show:
+            self.push_back(g)
             return
-        self.push_back(g)
-        if self.count < self.limit:
-            self.im.set_data(self.values)
-        else:
+        self.im.set_data(self.values)
+        if self.count >= self.limit:
             spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))
             self.im = self.axes.imshow(
                 spec,
