@@ -17,6 +17,9 @@ class DistFuncPlot:
         self.im.set_data(fs)
         self.im.set_clim(vmin=np.min(fs), vmax=np.max(fs))
 
+    def set_data(self, fs):
+        return
+
 
 class LinePlot:
     def __init__(self, axes, xvalue):
@@ -30,6 +33,9 @@ class LinePlot:
         for line in self.axes.get_lines():
             line.remove()
         self.axes.plot(self.x, g, color="black")
+
+    def set_data(self, g):
+        return
 
 
 class VerocityDistPlot:
@@ -57,3 +63,6 @@ class VerocityDistPlot:
             g = f[s].sum(axis=1)
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
         self.axes.legend()
+
+    def set_data(self, f):
+        return

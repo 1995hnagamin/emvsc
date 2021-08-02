@@ -71,21 +71,31 @@ def create_velocity_distribution_plot(ax, v, species):
     return plot.VerocityDistPlot(ax, v, species)
 
 
-def plot_total_distribution_function(plot, f, rho, E):
-    f_total = f.sum(axis=0)
-    plot.plot(f_total)
+def plot_total_distribution_function(plot, show, f, rho, E):
+    if show:
+        f_total = f.sum(axis=0)
+        plot.plot(f_total)
 
 
-def plot_charge_density(plot, f, rho, E):
-    plot.plot(rho)
+def plot_charge_density(plot, show, f, rho, E):
+    if show:
+        plot.plot(rho)
+    else:
+        plot.set_data(rho)
 
 
-def plot_electric_field(plot, f, rho, E):
-    plot.plot(E)
+def plot_electric_field(plot, show, f, rho, E):
+    if show:
+        plot.plot(E)
+    else:
+        plot.set_data(E)
 
 
-def plot_velocity_distribution(plot, f, rho, E):
-    plot.plot(f)
+def plot_velocity_distribution(plot, show, f, rho, E):
+    if show:
+        plot.plot(f)
+    else:
+        plot.set_data(f)
 
 
 def load_subplot_config(figure, view, vp2d):
@@ -132,6 +142,7 @@ class PlotPanel(wx.Panel):
         self.is_running = False
         self.subplots = None
         self.ndt = None
+        self.tick = None
 
     def init_figure(self, config):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
@@ -140,10 +151,9 @@ class PlotPanel(wx.Panel):
         self.is_running = True
 
         vp2d = load_vp2d_config(config)
-        values = vlasov.vp2d(vp2d)
-        tick = config["view"]["tick"]
-        self.ndt = tick * vp2d.dt
-        self.gen = itertools.islice(values, 0, None, tick)
+        self.gen = vlasov.vp2d(vp2d)
+        self.tick = config["view"]["tick"]
+        self.ndt = self.tick * vp2d.dt
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
@@ -153,13 +163,22 @@ class PlotPanel(wx.Panel):
         sizer.Add(canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
+    def set_data(self):
+        (f, rho, E) = next(self.gen)
+
+        for (plot, func) in self.subplots:
+            func(plot, False, f, rho, E)
+
     def plot(self, i):
+        for _ in range(self.tick - 1):
+            self.set_data()
+
         (f, rho, E) = next(self.gen)
         time = i * self.ndt
         self.figure.suptitle(f"T = {time:.3g}")
 
         for (plot, draw) in self.subplots:
-            draw(plot, f, rho, E)
+            draw(plot, True, f, rho, E)
 
     def close_animation(self):
         self.animation.event_source.stop()
