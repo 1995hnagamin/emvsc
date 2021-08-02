@@ -7,9 +7,10 @@ background_charge_density = 1.0
 
 system_length = 20.0
 max_velocity = 10.0
-time_step = 0.01
+termination_time = 10
 nx = 100
 nv = 100
+nt = 1000
 
 [[species]]
 name = "species 1"
