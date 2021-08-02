@@ -99,6 +99,8 @@ def load_subplot_config(figure, config, vp2d):
         subplot = view["subplot"][i]
         type = subplot["type"]
         if type == "distribution function":
+            ax.set_xlabel("x")
+            ax.set_ylabel("v")
             p = plot.TotalDistFuncPlot(figure, ax)
             f = vp2d.initial_distribution
             p.init_axes(f, 0, xmax, -vmax, vmax)
