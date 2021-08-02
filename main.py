@@ -27,7 +27,7 @@ def load_vp2d_config(toml):
     v = np.linspace(-vmax, vmax, nv, endpoint=False)
     xx, vv = np.meshgrid(x, v, sparse=True)
     background_charge_density = general["background_charge_density"]
-    dt = general["time_step"]
+    dt = general["termination_time"] / general["nt"]
 
     species = []
     f_init = []
@@ -83,7 +83,8 @@ def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
 
 
-def load_subplot_config(figure, view, vp2d):
+def load_subplot_config(figure, config, vp2d):
+    view = config["view"]
     n = len(view["subplot"])
     nrows = view["nrows"]
     ncols = view["ncols"]
@@ -118,6 +119,14 @@ def load_subplot_config(figure, view, vp2d):
     return plots
 
 
+def call_set_data(gen, subplots):
+    for val in gen:
+        (i, (f, rho, E)) = val
+        for (plot, func) in subplots:
+            func(plot, False, f, rho, E)
+        yield val
+
+
 class PlotPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -126,40 +135,35 @@ class PlotPanel(wx.Panel):
         self.animation = None
         self.is_running = False
         self.subplots = None
-        self.ndt = None
-        self.tick = None
+        self.dt = None
 
     def init_figure(self, config):
         self.figure = mpl.figure.Figure(figsize=(2, 2))
         canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.animation = mplanim.FuncAnimation(self.figure, self.plot, interval=50)
-        self.is_running = True
 
         vp2d = load_vp2d_config(config)
-        self.gen = vlasov.vp2d(vp2d)
-        self.tick = config["view"]["tick"]
-        self.ndt = self.tick * vp2d.dt
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.subplots = load_subplot_config(self.figure, config["view"], vp2d)
+        self.subplots = load_subplot_config(self.figure, config, vp2d)
+
+        nt = config["general"]["nt"]
+        self.dt = vp2d.dt
+        values = zip(range(0, nt + 1), vlasov.vp2d(vp2d))
+        tick = config["view"]["tick"]
+        frames = itertools.islice(call_set_data(values, self.subplots), 0, None, tick)
+        self.animation = mplanim.FuncAnimation(
+            self.figure, self.plot, frames=frames, interval=50, repeat=False
+        )
+        self.is_running = True
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-    def set_data(self):
-        (f, rho, E) = next(self.gen)
-
-        for (plot, func) in self.subplots:
-            func(plot, False, f, rho, E)
-
-    def plot(self, i):
-        for _ in range(self.tick - 1):
-            self.set_data()
-
-        (f, rho, E) = next(self.gen)
-        time = i * self.ndt
+    def plot(self, val):
+        (i, (f, rho, E)) = val
+        time = i * self.dt
         self.figure.suptitle(f"T = {time:.3g}")
 
         for (plot, draw) in self.subplots:
