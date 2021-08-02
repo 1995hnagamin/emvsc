@@ -90,6 +90,7 @@ def load_subplot_config(figure, config, vp2d, init):
     ncols = view["ncols"]
     xmax = vp2d.system_length
     vmax = vp2d.vmax
+    tmax = config["general"]["termination_time"]
     nt = config["general"]["nt"]
     x = np.linspace(0, xmax, vp2d.ngridx, endpoint=False)
     v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
@@ -121,8 +122,11 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(f_init)
             plots.append((p, plot_distribution_function))
         elif type == "Ex dispersion relation":
-            kmax = 10
-            wmax = 10
+            dx = xmax / vp2d.ngridx
+            dt = tmax / nt
+            kmax = 1 / (2 * dx)
+            wmax = 1 / (2 * dt)
+            ax.set_title("electric field")
             p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
             p.init_axes(E, -kmax, kmax, -wmax, wmax)
             plots.append((p, plot_electric_field))
