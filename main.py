@@ -27,7 +27,7 @@ def load_vp2d_config(toml):
     v = np.linspace(-vmax, vmax, nv, endpoint=False)
     xx, vv = np.meshgrid(x, v, sparse=True)
     background_charge_density = general["background_charge_density"]
-    dt = general["time_step"]
+    dt = general["termination_time"] / general["nt"]
 
     species = []
     f_init = []
