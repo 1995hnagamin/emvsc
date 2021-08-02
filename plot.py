@@ -86,7 +86,13 @@ class DispersionRelationPlot:
     def init_axes(self, g, kmin, kmax, wmin, wmax):
         self.extent = [kmin, kmax, wmin, wmax]
         self.push_back(g)
-        self.im = self.axes.imshow(self.values, cmap="rainbow", origin="lower")
+        height, width = self.values.shape
+        self.im = self.axes.imshow(
+            self.values,
+            cmap="rainbow",
+            origin="lower",
+            aspect=width / height,
+        )
 
     def plot(self, g, *, show=True):
         if not show:
