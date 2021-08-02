@@ -71,7 +71,7 @@ def create_velocity_distribution_plot(ax, v, species):
     return plot.VerocityDistPlot(ax, v, species)
 
 
-def plot_total_distribution_function(plot, show, f, rho, E):
+def plot_distribution_function(plot, show, f, rho, E):
     plot.plot(f, show=show)
 
 
@@ -81,10 +81,6 @@ def plot_charge_density(plot, show, f, rho, E):
 
 def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
-
-
-def plot_velocity_distribution(plot, show, f, rho, E):
-    plot.plot(f, show=show)
 
 
 def load_subplot_config(figure, view, vp2d):
@@ -105,7 +101,7 @@ def load_subplot_config(figure, view, vp2d):
             p = plot.TotalDistFuncPlot(figure, ax)
             f = vp2d.initial_distribution
             p.init_axes(f, 0, xmax, -vmax, vmax)
-            plots.append((p, plot_total_distribution_function))
+            plots.append((p, plot_distribution_function))
         elif type == "charge density":
             ax.set_xlim(0, xmax)
             p = create_charge_density_plot(ax, x)
@@ -117,7 +113,7 @@ def load_subplot_config(figure, view, vp2d):
         elif type == "velocity distribution":
             ax.set_xlim(-vmax, vmax)
             p = create_velocity_distribution_plot(ax, v, vp2d.species)
-            plots.append((p, plot_velocity_distribution))
+            plots.append((p, plot_distribution_function))
 
     return plots
 
