@@ -83,7 +83,8 @@ def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
 
 
-def load_subplot_config(figure, view, vp2d):
+def load_subplot_config(figure, config, vp2d):
+    view = config["view"]
     n = len(view["subplot"])
     nrows = view["nrows"]
     ncols = view["ncols"]
@@ -142,7 +143,7 @@ class PlotPanel(wx.Panel):
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.subplots = load_subplot_config(self.figure, config["view"], vp2d)
+        self.subplots = load_subplot_config(self.figure, config, vp2d)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(canvas, 1, wx.EXPAND)
