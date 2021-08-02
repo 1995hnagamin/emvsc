@@ -13,12 +13,11 @@ class DistFuncPlot:
         self.im = self.axes.imshow(fs, cmap="plasma", extent=extent, origin="lower")
         self.figure.colorbar(self.im, ax=self.axes)
 
-    def plot(self, fs):
+    def plot(self, fs, *, show=True):
+        if not show:
+            return
         self.im.set_data(fs)
         self.im.set_clim(vmin=np.min(fs), vmax=np.max(fs))
-
-    def set_data(self, fs):
-        return
 
 
 class LinePlot:
@@ -29,13 +28,12 @@ class LinePlot:
     def init_axes(self, g):
         self.axes.plot(self.x, g, color="black")
 
-    def plot(self, g):
+    def plot(self, g, *, show=True):
+        if not show:
+            return
         for line in self.axes.get_lines():
             line.remove()
         self.axes.plot(self.x, g, color="black")
-
-    def set_data(self, g):
-        return
 
 
 class VerocityDistPlot:
@@ -53,7 +51,9 @@ class VerocityDistPlot:
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
         self.axes.legend()
 
-    def plot(self, f):
+    def plot(self, f, *, show=True):
+        if not show:
+            return
         f_total = f.sum(axis=0)
         for line in self.axes.get_lines():
             line.remove()
@@ -63,6 +63,3 @@ class VerocityDistPlot:
             g = f[s].sum(axis=1)
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
         self.axes.legend()
-
-    def set_data(self, f):
-        return

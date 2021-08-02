@@ -72,30 +72,20 @@ def create_velocity_distribution_plot(ax, v, species):
 
 
 def plot_total_distribution_function(plot, show, f, rho, E):
-    if show:
-        f_total = f.sum(axis=0)
-        plot.plot(f_total)
+    f_total = f.sum(axis=0)
+    plot.plot(f_total, show=show)
 
 
 def plot_charge_density(plot, show, f, rho, E):
-    if show:
-        plot.plot(rho)
-    else:
-        plot.set_data(rho)
+    plot.plot(rho, show=show)
 
 
 def plot_electric_field(plot, show, f, rho, E):
-    if show:
-        plot.plot(E)
-    else:
-        plot.set_data(E)
+    plot.plot(E, show=show)
 
 
 def plot_velocity_distribution(plot, show, f, rho, E):
-    if show:
-        plot.plot(f)
-    else:
-        plot.set_data(f)
+    plot.plot(f, show=show)
 
 
 def load_subplot_config(figure, view, vp2d):
