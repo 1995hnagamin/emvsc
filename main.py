@@ -72,8 +72,7 @@ def create_velocity_distribution_plot(ax, v, species):
 
 
 def plot_total_distribution_function(plot, show, f, rho, E):
-    f_total = f.sum(axis=0)
-    plot.plot(f_total, show=show)
+    plot.plot(f, show=show)
 
 
 def plot_charge_density(plot, show, f, rho, E):
@@ -103,8 +102,8 @@ def load_subplot_config(figure, view, vp2d):
         subplot = view["subplot"][i]
         type = subplot["type"]
         if type == "distribution function":
-            p = plot.DistFuncPlot(figure, ax)
-            f = vp2d.initial_distribution.sum(axis=0)
+            p = plot.TotalDistFuncPlot(figure, ax)
+            f = vp2d.initial_distribution
             p.init_axes(f, 0, xmax, -vmax, vmax)
             plots.append((p, plot_total_distribution_function))
         elif type == "charge density":
