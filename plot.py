@@ -69,7 +69,7 @@ class VerocityDistPlot:
 
 
 class DispersionRelationPlot:
-    colormap = "rainbow"
+    colormap = "jet"
 
     def __init__(self, figure, axes, nx, nt):
         self.figure = figure
