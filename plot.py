@@ -106,11 +106,13 @@ class DispersionRelationPlot:
             # set the upper bound (P95%) and lower bound (P5%) of the colorbar
             upb = np.percentile(spec, 95)
             lwb = np.percentile(spec, 5)
+            [kmin, kmax, wmin, wmax] = self.extent
             self.im = self.axes.imshow(
                 spec,
                 cmap=self.colormap,
                 extent=self.extent,
                 origin="lower",
+                aspect=(kmax - kmin) / (wmax - wmin),
                 norm=LogNorm(vmin=lwb, vmax=upb),
             )
             self.figure.colorbar(self.im, ax=self.axes)
