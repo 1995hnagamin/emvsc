@@ -103,11 +103,14 @@ class DispersionRelationPlot:
         self.im.set_data(self.values)
         if self.count >= self.limit:
             spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))
+            # set the upper bound (P95%) and lower bound (P5%) of the colorbar
+            upb = np.percentile(spec, 95)
+            lwb = np.percentile(spec, 5)
             self.im = self.axes.imshow(
                 spec,
                 cmap=self.colormap,
                 extent=self.extent,
                 origin="lower",
-                norm=LogNorm(vmin=np.min(spec), vmax=np.max(spec)),
+                norm=LogNorm(vmin=lwb, vmax=upb),
             )
             self.figure.colorbar(self.im, ax=self.axes)
