@@ -153,7 +153,7 @@ class PlotPanel(wx.Panel):
         tick = config["view"]["tick"]
         frames = itertools.islice(call_set_data(values, self.subplots), 0, None, tick)
         self.animation = mplanim.FuncAnimation(
-            self.figure, self.plot, frames=frames, interval=50
+            self.figure, self.plot, frames=frames, interval=50, repeat=False
         )
         self.is_running = True
 
