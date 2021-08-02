@@ -69,6 +69,8 @@ class VerocityDistPlot:
 
 
 class DispersionRelationPlot:
+    colormap = "rainbow"
+
     def __init__(self, figure, axes, nx, nt):
         self.figure = figure
         self.axes = axes
@@ -89,7 +91,7 @@ class DispersionRelationPlot:
         height, width = self.values.shape
         self.im = self.axes.imshow(
             self.values,
-            cmap="rainbow",
+            cmap=self.colormap,
             origin="lower",
             aspect=width / height,
         )
@@ -103,7 +105,7 @@ class DispersionRelationPlot:
             spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))
             self.im = self.axes.imshow(
                 spec,
-                cmap="rainbow",
+                cmap=self.colormap,
                 extent=self.extent,
                 origin="lower",
                 norm=LogNorm(vmin=np.min(spec), vmax=np.max(spec)),
