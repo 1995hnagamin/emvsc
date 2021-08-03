@@ -128,7 +128,7 @@ def load_subplot_config(figure, config, vp2d, init):
             wmax = 1 / (2 * dt)
             ax.set_title("electric field")
             p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
-            p.init_axes(E, -kmax, kmax, -wmax, wmax)
+            p.init_axes(E, -kmax, kmax, 0, wmax)
             plots.append((p, plot_electric_field))
 
     return plots
