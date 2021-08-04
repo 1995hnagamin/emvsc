@@ -83,15 +83,18 @@ def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
 
 
-def load_subplot_config(figure, config, vp2d):
+def load_subplot_config(figure, config, vp2d, init):
     view = config["view"]
     n = len(view["subplot"])
     nrows = view["nrows"]
     ncols = view["ncols"]
     xmax = vp2d.system_length
     vmax = vp2d.vmax
+    tmax = config["general"]["termination_time"]
+    nt = config["general"]["nt"]
     x = np.linspace(0, xmax, vp2d.ngridx, endpoint=False)
     v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
+    (f_init, rho, E) = init
 
     plots = []
     for i in range(n):
@@ -108,15 +111,27 @@ def load_subplot_config(figure, config, vp2d):
         elif type == "charge density":
             ax.set_xlim(0, xmax)
             p = create_charge_density_plot(ax, x)
+            p.init_axes(rho)
             plots.append((p, plot_charge_density))
         elif type == "electric field":
             ax.set_xlim(0, xmax)
             p = create_electric_field_plot(ax, x)
+            p.init_axes(E)
             plots.append((p, plot_electric_field))
         elif type == "velocity distribution":
             ax.set_xlim(-vmax, vmax)
             p = create_velocity_distribution_plot(ax, v, vp2d.species)
+            p.init_axes(f_init)
             plots.append((p, plot_distribution_function))
+        elif type == "Ex dispersion relation":
+            dx = xmax / vp2d.ngridx
+            dt = tmax / nt
+            klim = subplot.get("max_wavenumber", 1 / (2 * dx))
+            wlim = subplot.get("max_frequency", 1 / (2 * dt))
+            ax.set_title("electric field")
+            p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
+            p.init_axes(E, dx, dt, klim, wlim)
+            plots.append((p, plot_electric_field))
 
     return plots
 
@@ -147,13 +162,17 @@ class PlotPanel(wx.Panel):
 
         self.figure.clf()
         self.figure.subplots_adjust(hspace=0.5, wspace=0.3)
-        self.subplots = load_subplot_config(self.figure, config, vp2d)
+        problem = vlasov.vp2d(vp2d)
+        init = next(problem)
+        self.subplots = load_subplot_config(self.figure, config, vp2d, init)
 
         nt = config["general"]["nt"]
         self.dt = vp2d.dt
-        values = zip(range(0, nt + 1), vlasov.vp2d(vp2d))
+        values = zip(range(1, nt + 1), problem)
         tick = config["view"]["tick"]
-        frames = itertools.islice(call_set_data(values, self.subplots), 0, None, tick)
+        frames = itertools.islice(
+            call_set_data(values, self.subplots), tick - 1, None, tick
+        )
         self.animation = mplanim.FuncAnimation(
             self.figure, self.plot, frames=frames, interval=50, repeat=False
         )
