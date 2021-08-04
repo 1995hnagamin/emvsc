@@ -78,6 +78,7 @@ class DispersionRelationPlot:
         self.count = 0
         self.limit = nt
         self.extent = None
+        self.wlim = None
 
     def push_back(self, g):
         if self.count >= self.limit:
@@ -85,8 +86,11 @@ class DispersionRelationPlot:
         self.values[self.count, :] = g
         self.count += 1
 
-    def init_axes(self, g, kmin, kmax, wmin, wmax):
-        self.extent = [kmin, kmax, wmin, wmax]
+    def init_axes(self, g, dx, dt, wlim):
+        kmax = 1 / (2 * dx)
+        wmax = 1 / (2 * dt)
+        self.extent = [-kmax, kmax, -wmax, wmax]
+        self.wlim = wlim
         self.push_back(g)
         height, width = self.values.shape
         self.im = self.axes.imshow(
@@ -102,20 +106,20 @@ class DispersionRelationPlot:
             return
         self.im.set_data(self.values)
         if self.count >= self.limit:
-            h = int(self.values.shape[0] / 2)
-            spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))[h:, :]
+            spec = np.absolute(np.fft.fftshift(np.fft.fft2(self.values)))
             # set the upper bound (P95%) and lower bound (P5%) of the colorbar
             upb = np.percentile(spec, 95)
             lwb = np.percentile(spec, 5)
-            [kmin, kmax, wmin, wmax] = self.extent
+            kwidth = self.extent[1] - self.extent[0]
             self.im = self.axes.imshow(
                 spec,
                 cmap=self.colormap,
                 extent=self.extent,
                 origin="lower",
-                aspect=(kmax - kmin) / (wmax - wmin),
+                aspect=(kwidth / self.wlim),
                 norm=LogNorm(vmin=lwb, vmax=upb),
             )
             self.axes.set_xlabel("k")
             self.axes.set_ylabel("ω")
+            self.axes.set_ylim([0, self.wlim])
             self.figure.colorbar(self.im, ax=self.axes)

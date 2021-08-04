@@ -48,6 +48,7 @@ type = "velocity distribution"
 
 [[view.subplot]]
 type = "Ex dispersion relation"
+max_frequency = 15
 
 [[view.subplot]]
 type = "charge density"
