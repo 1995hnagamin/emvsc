@@ -78,6 +78,7 @@ class DispersionRelationPlot:
         self.count = 0
         self.limit = nt
         self.extent = None
+        self.klim = None
         self.wlim = None
 
     def push_back(self, g):
@@ -86,10 +87,11 @@ class DispersionRelationPlot:
         self.values[self.count, :] = g
         self.count += 1
 
-    def init_axes(self, g, dx, dt, wlim):
+    def init_axes(self, g, dx, dt, klim, wlim):
         kmax = 1 / (2 * dx)
         wmax = 1 / (2 * dt)
         self.extent = [-kmax, kmax, -wmax, wmax]
+        self.klim = klim
         self.wlim = wlim
         self.push_back(g)
         height, width = self.values.shape
@@ -110,16 +112,16 @@ class DispersionRelationPlot:
             # set the upper bound (P95%) and lower bound (P5%) of the colorbar
             upb = np.percentile(spec, 95)
             lwb = np.percentile(spec, 5)
-            kwidth = self.extent[1] - self.extent[0]
             self.im = self.axes.imshow(
                 spec,
                 cmap=self.colormap,
                 extent=self.extent,
                 origin="lower",
-                aspect=(kwidth / self.wlim),
+                aspect=(2 * self.klim / self.wlim),
                 norm=LogNorm(vmin=lwb, vmax=upb),
             )
             self.axes.set_xlabel("k")
             self.axes.set_ylabel("ω")
+            self.axes.set_xlim([-self.klim, self.klim])
             self.axes.set_ylim([0, self.wlim])
             self.figure.colorbar(self.im, ax=self.axes)

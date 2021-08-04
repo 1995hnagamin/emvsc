@@ -124,10 +124,11 @@ def load_subplot_config(figure, config, vp2d, init):
         elif type == "Ex dispersion relation":
             dx = xmax / vp2d.ngridx
             dt = tmax / nt
+            klim = subplot.get("max_wavenumber", 1 / (2 * dx))
             wlim = subplot.get("max_frequency", 1 / (2 * dt))
             ax.set_title("electric field")
             p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
-            p.init_axes(E, dx, dt, wlim)
+            p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
 
     return plots
