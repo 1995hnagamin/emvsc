@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 import os
 import toml
+import random
 
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -71,6 +72,12 @@ def create_velocity_distribution_plot(ax, v, species):
     return plot.VerocityDistPlot(ax, v, species)
 
 
+def create_time_series_plot(ax, tmax, nt, nlines):
+    ax.set_xlabel("time")
+    ax.grid(True)
+    return plot.TimeSeriesPlot(ax, tmax, nt, nlines)
+
+
 def plot_distribution_function(plot, show, f, rho, E):
     plot.plot(f, show=show)
 
@@ -81,6 +88,11 @@ def plot_charge_density(plot, show, f, rho, E):
 
 def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
+
+
+def plot_time_series_energy(plot, show, f, rho, E):
+    energy = random.random()
+    plot.plot([energy], show=show)
 
 
 def load_subplot_config(figure, config, vp2d, init):
@@ -132,6 +144,10 @@ def load_subplot_config(figure, config, vp2d, init):
             p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
             p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
+        elif type == "energy":
+            p = create_time_series_plot(ax, tmax, nt, 1)
+            p.init_axes()
+            plots.append((p, plot_time_series_energy))
 
     return plots
 

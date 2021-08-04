@@ -39,6 +39,36 @@ class LinePlot:
         self.axes.plot(self.x, g, color="black")
 
 
+class TimeSeriesPlot:
+    def __init__(self, axes, tmax, nt, nlines):
+        self.axes = axes
+        self.limit = nt
+        self.nlines = nlines
+        self.t = np.linspace(0, tmax, nt)
+        self.values = np.empty((nt, nlines))
+        self.values[:, :] = np.nan
+        self.count = 0
+
+    def init_axes(self):
+        return
+
+    def push_back(self, v):
+        if self.count >= self.limit:
+            return
+        self.values[self.count, :] = v
+        self.count += 1
+
+    def plot(self, v, *, show=True):
+        if not show:
+            self.push_back(v)
+            return
+        for line in self.axes.get_lines():
+            line.remove()
+        self.axes.set_prop_cycle(None)
+        for i in range(self.nlines):
+            self.axes.plot(self.t, self.values[:, i])
+
+
 class VerocityDistPlot:
     def __init__(self, axes, vvalue, species):
         self.axes = axes
