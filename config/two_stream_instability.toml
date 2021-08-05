@@ -47,15 +47,15 @@ type = "distribution function"
 type = "velocity distribution"
 
 [[view.subplot]]
+type = "charge density"
+
+[[view.subplot]]
 type = "Ex dispersion relation"
 max_frequency = 15
 max_wavenumber = 2.5
 
 [[view.subplot]]
 type = "electric field"
-
-[[view.subplot]]
-type = "charge density"
 
 [[view.subplot]]
 type = "energy"
