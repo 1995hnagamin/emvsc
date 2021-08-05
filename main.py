@@ -3,7 +3,6 @@ import numpy as np
 import itertools
 import os
 import toml
-import random
 
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -90,9 +89,26 @@ def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
 
 
-def plot_time_series_energy(plot, show, f, rho, E):
-    energy = random.random()
-    plot.plot([energy], show=show)
+def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
+    m = np.array([species.q / species.qm for species in vp2d.species])
+    v = np.linspace(0, vp2d.vmax, vp2d.ngridv, endpoint=False)
+    nspecies = len(vp2d.species)
+    dx = vp2d.system_length / vp2d.ngridx
+    dv = 2 * vp2d.vmax / vp2d.ngridv
+    eps0 = 1.0
+
+    def func(plot, show, f, rho, E):
+        EE = eps0 / 2 * (E ** 2).sum() * dx
+        V = np.cumsum(E)
+        PE = (rho * V).sum() * dx
+
+        KE = 0
+        for s in range(nspecies):
+            KE += (f[s].sum(axis=1) * (v ** 2)).sum() * m[s] / 2 * dv * dx
+
+        plot.plot([EE, KE, PE], show=show)
+
+    return func
 
 
 def load_subplot_config(figure, config, vp2d, init):
@@ -145,9 +161,10 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
         elif type == "energy":
-            p = create_time_series_plot(ax, tmax, nt, 1)
+            ax.set_yscale("log")
+            p = create_time_series_plot(ax, tmax, nt, 3)
             p.init_axes()
-            plots.append((p, plot_time_series_energy))
+            plots.append((p, plot_time_series_energy(vp2d)))
 
     return plots
 
