@@ -68,7 +68,7 @@ def create_velocity_distribution_plot(ax, v, species):
     ax.set_title("velocity distribution")
     ax.set_xlabel("v")
     ax.grid(True)
-    return plot.VerocityDistPlot(ax, v, species)
+    return plot.VelocityDistPlot(ax, v, species)
 
 
 def plot_distribution_function(plot, show, f, rho, E):

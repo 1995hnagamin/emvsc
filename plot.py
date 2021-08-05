@@ -39,7 +39,7 @@ class LinePlot:
         self.axes.plot(self.x, g, color="black")
 
 
-class VerocityDistPlot:
+class VelocityDistPlot:
     def __init__(self, axes, vvalue, species):
         self.axes = axes
         self.v = vvalue
