@@ -161,6 +161,7 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
         elif type == "energy":
+            ax.set_xlim([0, tmax])
             ax.set_yscale("log")
             p = create_time_series_plot(ax, tmax, nt, 3)
             p.init_axes()
