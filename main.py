@@ -80,11 +80,11 @@ def create_electric_field_plot(ax, x):
     return plot.LinePlot(ax, x)
 
 
-def create_velocity_distribution_plot(ax, v, species):
+def create_velocity_distribution_plot(ax, v, species, dx):
     ax.set_title("velocity distribution")
     ax.set_xlabel("v")
     ax.grid(True)
-    return plot.VelocityDistPlot(ax, v, species)
+    return plot.VelocityDistPlot(ax, v, species, dx)
 
 
 def plot_distribution_function(plot, show, f, rho, E):
@@ -135,8 +135,9 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(E)
             plots.append((p, plot_electric_field))
         elif type == "velocity distribution":
+            dx = xmax / vp2d.ngridx
             ax.set_xlim(-vmax, vmax)
-            p = create_velocity_distribution_plot(ax, v, vp2d.species)
+            p = create_velocity_distribution_plot(ax, v, vp2d.species, dx)
             p.init_axes(f_init)
             plots.append((p, plot_distribution_function))
         elif type == "Ex dispersion relation":
