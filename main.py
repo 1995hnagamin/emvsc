@@ -17,6 +17,10 @@ def gaussian(x, x0, w):
     return A * np.exp(-((x - x0) ** 2) / (2 * w ** 2))
 
 
+def uniform(x, lowb, upb):
+    return ((lowb <= x) & (x < upb)) / (upb - lowb)
+
+
 def load_vp2d_config(toml):
     general = toml["general"]
     xmax = general["system_length"]
