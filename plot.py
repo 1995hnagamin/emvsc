@@ -71,33 +71,46 @@ class TimeSeriesPlot:
             self.axes.legend()
 
 
-class VerocityDistPlot:
-    def __init__(self, axes, vvalue, species):
+class VelocityDistPlot:
+    def __init__(self, axes, vvalue, species, dx):
         self.axes = axes
         self.v = vvalue
         self.species = species
+        self.dx = dx
 
     def init_axes(self, f):
-        f_total = f.sum(axis=0)
-        self.axes.plot(self.v, f_total.sum(axis=1), color="black", label="total")
         self.axes.set_prop_cycle(None)
         for s, species in enumerate(self.species):
-            g = f[s].sum(axis=1)
+            g = f[s].sum(axis=1) * self.dx
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
-        self.axes.legend()
+        if len(self.species) > 1:
+            f_total = f.sum(axis=0)
+            self.axes.plot(
+                self.v,
+                f_total.sum(axis=1) * self.dx,
+                color="black",
+                label="total",
+            )
+            self.axes.legend()
 
     def plot(self, f, *, show=True):
         if not show:
             return
-        f_total = f.sum(axis=0)
         for line in self.axes.get_lines():
             line.remove()
-        self.axes.plot(self.v, f_total.sum(axis=1), color="black", label="total")
         self.axes.set_prop_cycle(None)
         for s, species in enumerate(self.species):
-            g = f[s].sum(axis=1)
+            g = f[s].sum(axis=1) * self.dx
             self.axes.plot(self.v, g, label=species.name, linewidth=0.3)
-        self.axes.legend()
+        if len(self.species) > 1:
+            f_total = f.sum(axis=0)
+            self.axes.plot(
+                self.v,
+                f_total.sum(axis=1) * self.dx,
+                color="black",
+                label="total",
+            )
+            self.axes.legend()
 
 
 class DispersionRelationPlot:

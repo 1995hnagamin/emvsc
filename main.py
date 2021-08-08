@@ -17,6 +17,24 @@ def gaussian(x, x0, w):
     return A * np.exp(-((x - x0) ** 2) / (2 * w ** 2))
 
 
+def uniform(x, lowb, upb):
+    return ((lowb <= x) & (x < upb)) / (upb - lowb)
+
+
+def velocity_distribution(species, type, vv):
+    if type == "gaussian":
+        ni = species["number_density"]
+        v0 = species["drift_velocity"]
+        w = species["standard_derivation"]
+        return ni * gaussian(vv, v0, w)
+    if type == "uniform":
+        ni = species["number_density"]
+        lowb = species["min_velocity"]
+        upb = species["max_velocity"]
+        return ni * uniform(vv, lowb, upb)
+    raise
+
+
 def load_vp2d_config(toml):
     general = toml["general"]
     xmax = general["system_length"]
@@ -37,12 +55,10 @@ def load_vp2d_config(toml):
         qm = s["charge_to_mass_ratio"]
         species.append(vlasov.Species(name, q, qm))
 
-        ni = s["number_density"]
-        v0 = s["drift_velocity"]
+        type = s.get("distribution", "gaussian")
         amp = s["am_amplitude"]
         k = s["am_wavenumber"]
-        w = s["standard_derivation"]
-        fs = ni * gaussian(vv, v0, w) * (1 + amp * np.cos(2 * np.pi * k * xx))
+        fs = velocity_distribution(s, type, vv) * (1 + amp * np.cos(2 * np.pi * k * xx))
         f_init.append(fs)
 
     return vlasov.Vp2dConfig(
@@ -64,11 +80,11 @@ def create_electric_field_plot(ax, x):
     return plot.LinePlot(ax, x)
 
 
-def create_velocity_distribution_plot(ax, v, species):
+def create_velocity_distribution_plot(ax, v, species, dx):
     ax.set_title("velocity distribution")
     ax.set_xlabel("v")
     ax.grid(True)
-    return plot.VerocityDistPlot(ax, v, species)
+    return plot.VelocityDistPlot(ax, v, species, dx)
 
 
 def create_time_series_plot(ax, tmax, nt, nlines):
@@ -147,8 +163,9 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(E)
             plots.append((p, plot_electric_field))
         elif type == "velocity distribution":
+            dx = xmax / vp2d.ngridx
             ax.set_xlim(-vmax, vmax)
-            p = create_velocity_distribution_plot(ax, v, vp2d.species)
+            p = create_velocity_distribution_plot(ax, v, vp2d.species, dx)
             p.init_axes(f_init)
             plots.append((p, plot_distribution_function))
         elif type == "Ex dispersion relation":
