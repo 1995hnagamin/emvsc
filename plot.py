@@ -40,12 +40,13 @@ class LinePlot:
 
 
 class TimeSeriesPlot:
-    def __init__(self, axes, tmax, nt, nlines):
+    def __init__(self, axes, tmax, nt, labels):
         self.axes = axes
         self.limit = nt
-        self.nlines = nlines
+        self.labels = labels
+        self.nlines = len(labels)
         self.t = np.linspace(0, tmax, nt)
-        self.values = np.empty((nt, nlines))
+        self.values = np.empty((nt, self.nlines))
         self.values[:, :] = np.nan
         self.count = 0
 
@@ -66,7 +67,7 @@ class TimeSeriesPlot:
             line.remove()
         self.axes.set_prop_cycle(None)
         for i in range(self.nlines):
-            self.axes.plot(self.t, self.values[:, i], label=f"{i}")
+            self.axes.plot(self.t, self.values[:, i], label=self.labels[i])
         if self.nlines > 1:
             self.axes.legend()
 

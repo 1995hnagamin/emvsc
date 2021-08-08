@@ -87,10 +87,10 @@ def create_velocity_distribution_plot(ax, v, species, dx):
     return plot.VelocityDistPlot(ax, v, species, dx)
 
 
-def create_time_series_plot(ax, tmax, nt, nlines):
+def create_time_series_plot(ax, tmax, nt, labels):
     ax.set_xlabel("time")
     ax.grid(True)
-    return plot.TimeSeriesPlot(ax, tmax, nt, nlines)
+    return plot.TimeSeriesPlot(ax, tmax, nt, labels)
 
 
 def plot_distribution_function(plot, show, f, rho, E):
@@ -179,7 +179,8 @@ def load_subplot_config(figure, config, vp2d, init):
         elif type == "energy":
             ax.set_xlim([0, tmax])
             ax.set_yscale("log")
-            p = create_time_series_plot(ax, tmax, nt, 3)
+            labels = ["KE", "EE", "total"]
+            p = create_time_series_plot(ax, tmax, nt, labels)
             p.init_axes()
             plots.append((p, plot_time_series_energy(vp2d)))
 
