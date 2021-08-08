@@ -66,6 +66,21 @@ def load_vp2d_config(toml):
     )
 
 
+# simple plot functions
+
+
+def plot_distribution_function(plot, show, f, rho, E):
+    plot.plot(f, show=show)
+
+
+def plot_charge_density(plot, show, f, rho, E):
+    plot.plot(rho, show=show)
+
+
+def plot_electric_field(plot, show, f, rho, E):
+    plot.plot(E, show=show)
+
+
 def create_charge_density_plot(ax, x):
     ax.set_title("charge density")
     ax.set_xlabel("x")
@@ -91,18 +106,6 @@ def create_time_series_plot(ax, tmax, nt, labels):
     ax.set_xlabel("time")
     ax.grid(True)
     return plot.TimeSeriesPlot(ax, tmax, nt, labels)
-
-
-def plot_distribution_function(plot, show, f, rho, E):
-    plot.plot(f, show=show)
-
-
-def plot_charge_density(plot, show, f, rho, E):
-    plot.plot(rho, show=show)
-
-
-def plot_electric_field(plot, show, f, rho, E):
-    plot.plot(E, show=show)
 
 
 def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
