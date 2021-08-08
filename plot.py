@@ -66,7 +66,9 @@ class TimeSeriesPlot:
             line.remove()
         self.axes.set_prop_cycle(None)
         for i in range(self.nlines):
-            self.axes.plot(self.t, self.values[:, i])
+            self.axes.plot(self.t, self.values[:, i], label=f"{i}")
+        if self.nlines > 1:
+            self.axes.legend()
 
 
 class VerocityDistPlot:
