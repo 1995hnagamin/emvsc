@@ -115,14 +115,13 @@ def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
 
     def func(plot, show, f, rho, E):
         EE = eps0 / 2 * (E ** 2).sum() * dx
-        V = np.cumsum(E)
-        PE = (rho * V).sum() * dx
 
         KE = 0
         for s in range(nspecies):
             KE += (f[s].sum(axis=1) * (v ** 2)).sum() * m[s] / 2 * dv * dx
 
-        plot.plot([EE, KE, PE], show=show)
+        Etot = EE + KE
+        plot.plot([KE, EE, Etot], show=show)
 
     return func
 
