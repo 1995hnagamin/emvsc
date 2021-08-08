@@ -81,16 +81,7 @@ def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
 
 
-def create_charge_density_plot(ax, x):
-    ax.set_title("charge density")
-    ax.set_xlabel("x")
-    ax.grid(True)
-    return plot.LinePlot(ax, x)
-
-
-def create_electric_field_plot(ax, x):
-    ax.set_title("electric field Ex")
-    ax.set_xlabel("x")
+def create_line_plot(ax, x):
     ax.grid(True)
     return plot.LinePlot(ax, x)
 
@@ -155,13 +146,17 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(f, 0, xmax, -vmax, vmax)
             plots.append((p, plot_distribution_function))
         elif type == "charge density":
+            ax.set_title("charge density")
+            ax.set_xlabel("x")
             ax.set_xlim(0, xmax)
-            p = create_charge_density_plot(ax, x)
+            p = create_line_plot(ax, x)
             p.init_axes(rho)
             plots.append((p, plot_charge_density))
         elif type == "electric field":
+            ax.set_title("electric field Ex")
+            ax.set_xlabel("x")
             ax.set_xlim(0, xmax)
-            p = create_electric_field_plot(ax, x)
+            p = create_line_plot(ax, x)
             p.init_axes(E)
             plots.append((p, plot_electric_field))
         elif type == "velocity distribution":
