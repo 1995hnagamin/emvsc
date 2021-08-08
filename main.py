@@ -107,7 +107,7 @@ def plot_electric_field(plot, show, f, rho, E):
 
 def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
     m = np.array([species.q / species.qm for species in vp2d.species])
-    v = np.linspace(0, vp2d.vmax, vp2d.ngridv, endpoint=False)
+    v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
     nspecies = len(vp2d.species)
     dx = vp2d.system_length / vp2d.ngridx
     dv = 2 * vp2d.vmax / vp2d.ngridv
