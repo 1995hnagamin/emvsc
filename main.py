@@ -21,6 +21,20 @@ def uniform(x, lowb, upb):
     return ((lowb <= x) & (x < upb)) / (upb - lowb)
 
 
+def velocity_distribution(species, type, vv):
+    if type == "gaussian":
+        ni = species["number_density"]
+        v0 = species["drift_velocity"]
+        w = species["standard_derivation"]
+        return ni * gaussian(vv, v0, w)
+    if type == "uniform":
+        ni = species["number_density"]
+        lowb = species["min_velocity"]
+        upb = species["max_velocity"]
+        return ni * uniform(vv, lowb, upb)
+    raise
+
+
 def load_vp2d_config(toml):
     general = toml["general"]
     xmax = general["system_length"]
@@ -41,12 +55,10 @@ def load_vp2d_config(toml):
         qm = s["charge_to_mass_ratio"]
         species.append(vlasov.Species(name, q, qm))
 
-        ni = s["number_density"]
-        v0 = s["drift_velocity"]
+        type = s.get("distribution", "gaussian")
         amp = s["am_amplitude"]
         k = s["am_wavenumber"]
-        w = s["standard_derivation"]
-        fs = ni * gaussian(vv, v0, w) * (1 + amp * np.cos(2 * np.pi * k * xx))
+        fs = velocity_distribution(s, type, vv) * (1 + amp * np.cos(2 * np.pi * k * xx))
         f_init.append(fs)
 
     return vlasov.Vp2dConfig(
