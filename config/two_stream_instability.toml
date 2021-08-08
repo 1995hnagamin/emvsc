@@ -37,7 +37,7 @@ standard_derivation = 1.0
 [view]
 tick = 10
 
-ncols = 2
+ncols = 3
 nrows = 2
 
 [[view.subplot]]
@@ -47,9 +47,15 @@ type = "distribution function"
 type = "velocity distribution"
 
 [[view.subplot]]
+type = "charge density"
+
+[[view.subplot]]
 type = "Ex dispersion relation"
 max_frequency = 15
 max_wavenumber = 2.5
 
 [[view.subplot]]
-type = "charge density"
+type = "electric field"
+
+[[view.subplot]]
+type = "energy"

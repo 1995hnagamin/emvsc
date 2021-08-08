@@ -87,6 +87,12 @@ def create_velocity_distribution_plot(ax, v, species, dx):
     return plot.VelocityDistPlot(ax, v, species, dx)
 
 
+def create_time_series_plot(ax, tmax, nt, labels):
+    ax.set_xlabel("time")
+    ax.grid(True)
+    return plot.TimeSeriesPlot(ax, tmax, nt, labels)
+
+
 def plot_distribution_function(plot, show, f, rho, E):
     plot.plot(f, show=show)
 
@@ -97,6 +103,27 @@ def plot_charge_density(plot, show, f, rho, E):
 
 def plot_electric_field(plot, show, f, rho, E):
     plot.plot(E, show=show)
+
+
+def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
+    m = np.array([species.q / species.qm for species in vp2d.species])
+    v = np.linspace(-vp2d.vmax, vp2d.vmax, vp2d.ngridv, endpoint=False)
+    nspecies = len(vp2d.species)
+    dx = vp2d.system_length / vp2d.ngridx
+    dv = 2 * vp2d.vmax / vp2d.ngridv
+    eps0 = 1.0
+
+    def func(plot, show, f, rho, E):
+        EE = eps0 / 2 * (E ** 2).sum() * dx
+
+        KE = 0
+        for s in range(nspecies):
+            KE += (f[s].sum(axis=1) * (v ** 2)).sum() * m[s] / 2 * dv * dx
+
+        Etot = EE + KE
+        plot.plot([KE, EE, Etot], show=show)
+
+    return func
 
 
 def load_subplot_config(figure, config, vp2d, init):
@@ -149,6 +176,13 @@ def load_subplot_config(figure, config, vp2d, init):
             p = plot.DispersionRelationPlot(figure, ax, vp2d.ngridx, nt)
             p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
+        elif type == "energy":
+            ax.set_xlim([0, tmax])
+            ax.set_yscale("log")
+            labels = ["KE", "EE", "total"]
+            p = create_time_series_plot(ax, tmax, nt, labels)
+            p.init_axes()
+            plots.append((p, plot_time_series_energy(vp2d)))
 
     return plots
 
