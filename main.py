@@ -178,8 +178,10 @@ def load_subplot_config(figure, config, vp2d, init):
             p.init_axes(E, dx, dt, klim, wlim)
             plots.append((p, plot_electric_field))
         elif type == "energy":
+            ax.set_title("Energy")
             ax.set_xlim([0, tmax])
             ax.set_yscale("log")
+            ax.grid(True, which="both", axis="y")
             labels = ["KE", "EE", "total"]
             p = create_time_series_plot(ax, tmax, nt, labels)
             p.init_axes()
