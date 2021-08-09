@@ -18,7 +18,8 @@ def gaussian(x, x0, w):
 
 
 def uniform(x, lowb, upb):
-    return ((lowb <= x) & (x < upb)) / (upb - lowb)
+    dx = upb - lowb
+    return ((lowb <= x) & (x < upb)) / (2 * dx) + ((lowb < x) & (x <= upb)) / (2 * dx)
 
 
 def velocity_distribution(species, type, vv):
