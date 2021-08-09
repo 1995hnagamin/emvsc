@@ -126,6 +126,23 @@ def plot_time_series_energy(vp2d: vlasov.Vp2dConfig):
     return func
 
 
+def plot_time_series_courant(vp2d: vlasov.Vp2dConfig):
+    dt = vp2d.dt
+    vmax = vp2d.vmax
+    qm = np.array([species.qm for species in vp2d.species])
+    dx = vp2d.system_length / vp2d.ngridx
+    dv = 2 * vp2d.vmax / vp2d.ngridv
+    nspecies = len(vp2d.species)
+
+    def func(plot, show, f, rho, E):
+        k = 0
+        for s in range(nspecies):
+            k = max(k, np.max(np.sqrt((vmax / dx) ** 2 + (qm[s] * E / dv) ** 2)))
+        plot.plot([k * dt], show=show)
+
+    return func
+
+
 def load_subplot_config(figure, config, vp2d, init):
     view = config["view"]
     n = len(view["subplot"])
@@ -183,6 +200,16 @@ def load_subplot_config(figure, config, vp2d, init):
             p = create_time_series_plot(ax, tmax, nt, labels)
             p.init_axes()
             plots.append((p, plot_time_series_energy(vp2d)))
+        elif type == "courant number":
+            ax.set_title("Courant number")
+            ax.set_xlim([0, tmax])
+            ax.set_yscale("log")
+            ax.grid(True, which="both", axis="y")
+            ax.axhline(0.1, color="0.1")
+            ax.axhline(1, color="0.1")
+            p = create_time_series_plot(ax, tmax, nt, ["C"])
+            p.init_axes()
+            plots.append((p, plot_time_series_courant(vp2d)))
 
     return plots
 
