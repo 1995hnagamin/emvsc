@@ -1,0 +1,44 @@
+[general]
+title = "uniform velocity distribution"
+description = """
+"""
+
+background_charge_density = 0.1
+
+system_length = 20
+max_velocity = 10
+termination_time = 30
+nx = 100
+nv = 100
+nt = 3000
+
+[[species]]
+name = "species 1"
+charge = -1
+charge_to_mass_ratio = -1
+
+am_wavenumber = 0.05
+am_amplitude = 0.3
+
+distribution = "uniform"
+number_density = 2
+velocity = [-2, 2]
+
+
+[view]
+tick = 10
+
+ncols = 2
+nrows = 2
+
+[[view.subplot]]
+type = "distribution function"
+
+[[view.subplot]]
+type = "velocity distribution"
+
+[[view.subplot]]
+type = "Ex dispersion relation"
+
+[[view.subplot]]
+type = "courant number"
