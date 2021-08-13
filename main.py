@@ -30,8 +30,8 @@ def velocity_distribution(species, type, vv):
         return ni * gaussian(vv, v0, w)
     if type == "uniform":
         ni = species["number_density"]
-        lowb = species["min_velocity"]
-        upb = species["max_velocity"]
+        lowb = species["velocity"][0]
+        upb = species["velocity"][1]
         return ni * uniform(vv, lowb, upb)
     raise
 
