@@ -3,36 +3,40 @@ title = "Electron Two-stream Instability"
 description = """
 """
 
-background_charge_density = 1.0
+background_charge_density = 1
 
-system_length = 20.0
-max_velocity = 10.0
+system_length = 20
+max_velocity = 10
 termination_time = 10
+
 nx = 100
 nv = 100
 nt = 1000
+# dx = 0.2, dv = 0.2, dt = 0.01
 
 [[species]]
 name = "species 1"
-charge = -1.0
-charge_to_mass_ratio = -1.0
-drift_velocity = -3.0
-number_density = 1.0
+charge = -1
+charge_to_mass_ratio = -1
+
+number_density = 1
+drift_velocity = -3
+standard_derivation = 1
 
 am_wavenumber = 0.05
 am_amplitude = 0.3
-standard_derivation = 1.0
 
 [[species]]
 name = "species 2"
-charge = -1.0
-charge_to_mass_ratio = -1.0
-drift_velocity = 3.0
-number_density = 1.0
+charge = -1
+charge_to_mass_ratio = -1
+
+number_density = 1
+drift_velocity = 3
+standard_derivation = 1
 
 am_wavenumber = 0.05
 am_amplitude = 0.3
-standard_derivation = 1.0
 
 [view]
 tick = 10
